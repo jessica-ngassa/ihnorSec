@@ -116,8 +116,6 @@ Icons are configured in `src/app/app.config.ts`. To add new icons:
 
 ```typescript
 import { NewIcon } from 'lucide-angular';
-
-// Add to imports and LucideAngularModule.pick()
 ```
 
 ### Tailwind CSS
