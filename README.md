@@ -30,7 +30,7 @@ A comprehensive Angular-based fraud detection and analysis system for identifyin
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:jessica-ngassa/ihnorSec.git
    cd ihnorSec
    ```
 
