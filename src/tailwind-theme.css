@@ -1,0 +1,22 @@
+@theme {
+  --color-primary: #030213;
+  --color-brand-blue: #1F3A7D;
+  --color-background: #ffffff;
+  --color-foreground: oklch(0.145 0 0);
+  --color-muted: #ececf0;
+  --color-muted-foreground: #717182;
+  --color-accent: #e9ebef;
+  --color-destructive: #d4183d;
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-warning-yellow: #F2C94C;
+  --color-warning-orange: #f97316;
+
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --radius-lg: 0.625rem;
+
+  --text-2xl: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-lg: 1.125rem;
+  --text-base: 1rem;
+}

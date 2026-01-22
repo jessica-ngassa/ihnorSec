@@ -1,0 +1,41 @@
+ <div class="p-8 bg-gray-50/30 min-h-screen">
+  <div class="mb-8">
+    <h1 class="text-[#1F3A7D] text-2xl font-bold mb-2">Analysis Results</h1>
+    <p class="text-gray-500">Comprehensive analysis of uploaded documents and data files</p>
+  </div>
+
+  <div class="flex gap-4 mb-6">
+    <div class="relative flex-grow">
+      <lucide-icon name="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
+      <input type="text" placeholder="Search by name, ID, or transaction ID..."
+      [ngModel]="searchValue()"
+      (ngModelChange)="searchValue.set($event)"
+        class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-blue/10 shadow-sm" />
+    </div>
+
+    <button
+      class="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+      (click)="isFilterVisible.set(!isFilterVisible())">
+      <lucide-icon name="sliders-horizontal" class="w-4 h-4"></lucide-icon>
+      Filters
+    </button>
+  </div>
+
+  <div class="flex gap-6 items-start">
+    @if (isFilterVisible()) {
+    <div class="w-72 shrink-0 animate-in slide-in-from-left duration-300 h-[calc(100vh-250px)]">
+      <app-table-filter (filterChanged)="onFilterUpdate($event)"
+        (reset)="onFilterUpdate({range: [0,100], status: 'All'})">
+      </app-table-filter>
+    </div>
+    }
+
+    <div class="flex-grow bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <app-data-table
+        [columns]="fraudColumns"
+        [data]="filteredData()"
+        (actionClicked)="handleAction($event)">
+      </app-data-table>
+    </div>
+  </div>
+</div>

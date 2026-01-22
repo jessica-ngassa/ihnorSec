@@ -1,0 +1,58 @@
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 2rem;
+  background-color: white;
+}
+
+.nav-icon-btn {
+  position: relative;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: all 0.15s ease-in-out;
+  color: #9ca3af;
+
+  &:hover {
+    background-color: #f9fafb;
+  }
+
+  lucide-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.user-profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+
+  .avatar-circle {
+    width: 2.25rem;
+    height: 2.25rem;
+    background-color: #1f3a7d;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+    lucide-icon {
+      color: white;
+    }
+  }
+
+  .user-label {
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: color 0.15s ease-in-out;
+  }
+
+  &:hover .user-label {
+    color: #1f3a7d;
+  }
+}

@@ -1,0 +1,28 @@
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+  <h3 class="text-[#1F3A7D] font-semibold mb-2">Secteurs d'Application</h3>
+  <p class="text-gray-500 text-sm mb-6">
+    IHNOR Secure est appliqué dans tous les secteurs manipulant des données sensibles.
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    @for (sector of sectors; track sector.id) {
+      <div
+        class="p-4 rounded-xl border-2 transition-transform hover:-translate-y-1"
+        [ngClass]="getClasses(sector.color)"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-10 h-10 rounded-lg flex items-center justify-center text-xl shadow-sm"
+            [ngClass]="getIconClasses(sector.color)"
+          >
+            {{ sector.icon }}
+          </div>
+          <div>
+            <p class="font-semibold text-[#1F3A7D] text-sm">{{ sector.name }}</p>
+            <p class="text-xs text-gray-500">{{ sector.count | number }} analyses</p>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

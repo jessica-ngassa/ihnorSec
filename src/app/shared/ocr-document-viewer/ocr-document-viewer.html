@@ -1,0 +1,100 @@
+<!-- <div class="ocr-wrapper" >
+  <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+      <div class="flex flex-col">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xs font-medium text-gray-500">OCR Document Viewer</h3>
+          <div class="flex gap-3 text-gray-400">
+            <button class="hover:text-brand-blue"><lucide-icon name="search" class="w-4 h-4"></lucide-icon></button>
+            <button class="hover:text-brand-blue"><lucide-icon name="zoom-in" class="w-4 h-4"></lucide-icon></button>
+            <button class="hover:text-brand-blue"><lucide-icon name="rotate-cw" class="w-4 h-4"></lucide-icon></button>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-100 rounded-xl overflow-hidden flex flex-col h-full min-h-[400px]">
+          <div class="flex-grow flex items-center justify-center p-8 bg-gray-50/50">
+            <img [src]="imageSrc()" alt="Extracted Document" class="max-w-full shadow-lg rounded-sm" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <h3 class="text-xs font-medium text-gray-500 mb-4">OCR Extracted Data</h3>
+
+        <div class="flex flex-col gap-4">
+          @for (field of fields; track field.key) {
+            <ng-container *ngTemplateOutlet="dataField; context: { label: field.label, value: getFieldValue(field.key) }"></ng-container>
+          }
+
+          <div class="mt-2 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+            <p class="text-[10px] uppercase font-bold text-blue-400 mb-1">OCR Confidence</p>
+            <p class="text-blue-600 font-bold text-lg">{{ data().confidence }}%</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #dataField let-label="label" let-value="value">
+  <div class="bg-white border border-gray-100 p-3 rounded-lg shadow-sm">
+    <p class="text-[10px] uppercase font-semibold text-gray-400 mb-1">{{ label }}</p>
+    <p class="text-gray-800 font-medium text-sm leading-tight">{{ value }}</p>
+  </div>
+</ng-template> -->
+
+
+<div class="ocr-wrapper mt-8">
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+          <div class="flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Document Image</h3>
+              <div class="flex gap-2 text-gray-400 bg-gray-50 p-1 rounded-lg border border-gray-100">
+                <button (click)="zoomOut()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Zoom Out">
+                  <lucide-icon name="zoom-out" class="w-4 h-4"></lucide-icon>
+                </button>
+                <button (click)="zoomIn()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Zoom In">
+                  <lucide-icon name="zoom-in" class="w-4 h-4"></lucide-icon>
+                </button>
+                <button (click)="rotate()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Rotate">
+                  <lucide-icon name="rotate-cw" class="w-4 h-4"></lucide-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="bg-gray-50/50 border border-gray-100 rounded-xl overflow-hidden flex items-center justify-center h-[400px] relative">
+              <div [style.transform]="transformStyle()" class="transition-transform duration-300 ease-in-out">
+                <img [src]="imageSrc()" alt="Extracted Document" class="max-w-full shadow-lg rounded-sm" />
+              </div>
+            </div>
+            <div class="text-center mt-2 text-xs text-gray-400">Zoom: {{ zoomLevel() }}%</div>
+          </div>
+
+          <div class="flex flex-col">
+             <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">OCR Extracted Data</h3>
+             <div class="space-y-3">
+               <ng-container *ngTemplateOutlet="field; context: {label: 'Name', value: data().name}"></ng-container>
+               <ng-container *ngTemplateOutlet="field; context: {label: 'Date of Birth', value: data().dob}"></ng-container>
+               <ng-container *ngTemplateOutlet="field; context: {label: 'ID Number', value: data().idNumber}"></ng-container>
+               <ng-container *ngTemplateOutlet="field; context: {label: 'Address', value: data().address}"></ng-container>
+             </div>
+
+             <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <p class="text-[10px] uppercase font-bold text-blue-400 mb-1">OCR Confidence</p>
+                <p class="text-blue-600 font-bold text-lg">{{ data().confidence }}%</p>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #field let-label="label" let-value="value">
+      <div class="bg-white border border-gray-100 p-3 rounded-lg shadow-sm">
+        <p class="text-[10px] uppercase font-semibold text-gray-400 mb-1">{{ label }}</p>
+        <p class="text-gray-800 font-medium text-sm">{{ value }}</p>
+      </div>
+    </ng-template>

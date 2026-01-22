@@ -1,0 +1,102 @@
+$brand-blue: #1F3A7D;
+$brand-light: #2B4C9F;
+$text-gray: #4b5563;
+$text-light-gray: #6b7280;
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, $brand-blue 0%, $brand-light 100%);
+  padding: 20px;
+
+  .login-card {
+    background: #ffffff;
+    padding: 48px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+
+    .logo-container {
+      background-color: $brand-blue;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%; // Circle shape
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+
+      .logo-icon {
+        color: white;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    h1 {
+      color: $brand-blue;
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    p {
+      color: $text-light-gray;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  ::ng-deep {
+    .ant-form-item-label > label {
+      color: $text-gray;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .ant-input {
+      padding: 12px 16px; // Taller inputs
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 15px;
+
+      &:focus, &:hover {
+        border-color: $brand-blue;
+        box-shadow: 0 0 0 2px rgba(31, 58, 125, 0.1);
+      }
+    }
+
+    .ant-btn-primary {
+      background-color: $brand-blue;
+      border-color: $brand-blue;
+      height: 48px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      width: 100%;
+      margin-top: 8px;
+
+      &:hover {
+        background-color: $brand-light;
+        border-color: $brand-light;
+      }
+    }
+  }
+
+  .footer-note {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: $text-light-gray;
+  }
+}

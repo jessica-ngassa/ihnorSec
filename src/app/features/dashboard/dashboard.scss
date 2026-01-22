@@ -1,0 +1,81 @@
+// @import "tailwindcss";
+// @import "../../../tailwind-theme.css";
+
+// @layer components {
+//   .stats-grid {
+//     @apply grid grid-cols-1 gap-6 mb-8;
+//   }
+
+//   .stat-card {
+//     @apply bg-white p-6 rounded-xl border border-gray-100 shadow-sm transition-all hover:shadow-md;
+
+//     .icon-box {
+//       @apply p-2 w-10 h-10 rounded-lg flex items-center justify-center mb-4;
+//       lucide-icon { @apply w-6 h-6; }
+//     }
+
+//     .label { @apply text-gray-500 text-sm mb-1; }
+//     .value { @apply text-2xl font-bold m-0 text-brand-blue; }
+//   }
+
+//   .action-container {
+//     @apply mb-8 bg-white p-6 rounded-xl border border-gray-100;
+//   }
+// }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .icon-box {
+    padding: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+
+    lucide-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  .label {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1f3a7d;
+  }
+}
+
+.action-container {
+  margin-bottom: 2rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid #f3f4f6;
+}

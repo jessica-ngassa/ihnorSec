@@ -1,0 +1,43 @@
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+  <div class="px-6 py-4 border-b border-gray-100">
+    <h3 class="text-brand-blue font-semibold">{{ title }}</h3>
+  </div>
+  <table class="w-full text-sm text-left">
+    <thead class="bg-gray-50 text-gray-500 font-medium">
+      <tr>
+        <th class="px-6 py-3">Field</th>
+        <th class="px-6 py-3">{{ leftColumnLabel }}</th>
+        <th class="px-6 py-3">{{ rightColumnLabel }}</th>
+        <th class="px-6 py-3">Match Indicator</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      @for (row of data; track row.field) {
+        <tr class="hover:bg-gray-50/50">
+          <td class="px-6 py-4 font-medium text-gray-900">{{ row.field }}</td>
+          <td class="px-6 py-4 text-gray-600">
+            {{ formatValue(row.system || row.expected, row.field) }}
+          </td>
+          <td class="px-6 py-4 text-gray-600">
+            {{ formatValue(row.doc || row.actual, row.field) }}
+          </td>
+          <td class="px-6 py-4">
+            @if (row.isMissing) {
+              <span class="flex items-center gap-1 text-orange-500 font-medium">
+                <lucide-icon name="alert-circle" class="w-4 h-4"></lucide-icon> Missing
+              </span>
+            } @else if (row.match) {
+              <span class="flex items-center gap-1 text-green-600 font-medium">
+                <lucide-icon name="check" class="w-4 h-4"></lucide-icon> Match
+              </span>
+            } @else {
+              <span class="flex items-center gap-1 text-red-600 font-medium">
+                <lucide-icon name="x" class="w-4 h-4"></lucide-icon> Mismatch
+              </span>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

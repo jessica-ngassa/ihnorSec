@@ -1,0 +1,67 @@
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="col-span-1 bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-full">
+    <h2 class="text-[#1F3A7D] text-lg font-semibold mb-6">Profile Summary</h2>
+    <div class="flex flex-col">
+      <ng-container *ngTemplateOutlet="detailItem; context: { label: 'ID Number', value: data().details.idNumber }"></ng-container>
+      <ng-container *ngTemplateOutlet="detailItem; context: { label: 'Age', value: data().details.age }"></ng-container>
+      <ng-container *ngTemplateOutlet="detailItem; context: { label: 'Gender', value: data().details.gender }"></ng-container>
+      <ng-container *ngTemplateOutlet="detailItem; context: { label: 'Region', value: data().details.region }"></ng-container>
+      <ng-container *ngTemplateOutlet="detailItem; context: { label: 'Role', value: data().details.role }"></ng-container>
+      <ng-container *ngTemplateOutlet="detailItem; context: { label: 'Category', value: data().details.category }"></ng-container>
+      
+      <div class="py-3 flex justify-between items-center">
+        <span class="text-sm font-medium text-gray-500">Anomalies Detected</span>
+        <span class="text-sm font-bold text-red-600">{{ data().details.anomaliesDetected }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <ng-container *ngTemplateOutlet="statusCard; context: { 
+      title: 'Fraud Score', 
+      value: data().status.fraudScore + '/100', 
+      icon: 'alert-circle', 
+      color: getFraudScoreColor(data().status.fraudScore) 
+    }"></ng-container>
+
+    <ng-container *ngTemplateOutlet="statusCard; context: { 
+      title: 'Total Anomalies', 
+      value: data().status.totalAnomalies, 
+      icon: 'alert-triangle', 
+      color: data().status.totalAnomalies > 0 ? 'orange' : 'blue' 
+    }"></ng-container>
+
+    <ng-container *ngTemplateOutlet="statusCard; context: { 
+      title: 'Document Status', 
+      value: data().status.documentStatus, 
+      icon: 'file-text', 
+      color: getDocumentStatusColor(data().status.documentStatus) 
+    }"></ng-container>
+
+    <ng-container *ngTemplateOutlet="statusCard; context: { 
+      title: 'OCR Confidence', 
+      value: data().status.ocrConfidence + '%', 
+      icon: 'file-check', 
+      color: 'blue' 
+    }"></ng-container>
+  </div>
+</div>
+
+<ng-template #detailItem let-label="label" let-value="value">
+  <div class="py-3 border-b border-gray-100 flex justify-between items-center last:border-0">
+    <span class="text-sm font-medium text-gray-500">{{ label }}</span>
+    <span class="text-sm font-semibold text-gray-900">{{ value }}</span>
+  </div>
+</ng-template>
+
+<ng-template #statusCard let-title="title" let-value="value" let-icon="icon" let-color="color">
+  <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col">
+    <div class="flex items-center gap-3 mb-3">
+      <div [ngClass]="'bg-' + color + '-100 text-' + color + '-600'" class="p-2 w-10 h-10 rounded-lg flex items-center justify-center">
+        <lucide-icon [name]="icon" class="w-6 h-6"></lucide-icon>
+      </div>
+      <span class="text-sm font-medium text-gray-500">{{ title }}</span>
+    </div>
+    <span [ngClass]="'text-' + color + '-600'" class="text-2xl font-bold">{{ value }}</span>
+  </div>
+</ng-template>

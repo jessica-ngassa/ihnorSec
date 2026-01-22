@@ -1,0 +1,176 @@
+@if (fraudCase(); as data) {
+<div class="p-8 bg-gray-50/50 min-h-screen">
+
+  <div class="mb-8">
+    <button (click)="goBack()" class="flex items-center gap-2 text-brand-blue hover:underline mb-4 text-sm font-medium">
+      <lucide-icon name="arrow-left" class="w-4 h-4"></lucide-icon>
+      Back to Analysis Results
+    </button>
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <h1 class="text-2xl font-bold text-gray-900">{{ data.name }}</h1>
+        <span [class]="getStatusColor(data.status)" class="px-3 py-1 rounded-full text-xs font-semibold border uppercase tracking-wide">
+          {{ data.status }}
+        </span>
+        @if (data.recordType === 'payment') {
+          <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold border border-green-200">Payment Analysis</span>
+        } @else if (data.recordType === 'compliance') {
+          <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold border border-purple-200">Compliance Analysis</span>
+        } @else {
+          <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold border border-blue-200">Identity Analysis</span>
+        }
+      </div>
+      <button class="flex items-center gap-2 px-5 py-2.5 bg-brand-blue text-white rounded-lg hover:bg-blue-800 transition-colors shadow-sm text-sm font-medium">
+        <lucide-icon name="download" class="w-4 h-4"></lucide-icon>
+        Download Report
+      </button>
+    </div>
+
+    <div class="mt-6 px-4 py-3 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-800">
+      @if (data.recordType === 'payment') {
+        <strong>Payment Analysis:</strong> This analysis checks for overpayments, duplicate transactions, ghost vendors, and approval chain compliance.
+      } @else if (data.recordType === 'compliance') {
+        <strong>Compliance Analysis:</strong> This analysis detects procedure deviations, identifies root causes, and correlates process failures with outcome indicators.
+      } @else {
+        <strong>Document Analysis:</strong> This analysis includes OCR extraction, template matching, data comparison, and fraud detection on identity documents.
+      }
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+
+    <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-full">
+      <h3 class="text-brand-blue font-semibold mb-6">
+        @if (data.recordType === 'payment') { Payment Summary }
+        @else if (data.recordType === 'compliance') { Compliance Summary }
+        @else { Profile Summary }
+      </h3>
+
+      <div class="space-y-4 text-sm">
+        @if (data.recordType === 'payment' && data.paymentData) {
+          <div class="flex justify-between"><span class="text-gray-500">Transaction ID</span><span class="font-medium">{{ data.paymentData.transactionId }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Payment Date</span><span class="font-medium">{{ data.paymentData.paymentDate }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Department</span><span class="font-medium">{{ data.paymentData.department }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Payment Type</span><span class="font-medium text-right w-1/2">{{ data.paymentData.paymentType }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Approved By</span><span class="font-medium">{{ data.paymentData.approvedBy }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Payment Method</span><span class="font-medium">{{ data.paymentData.paymentMethod }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Reference</span><span class="font-medium text-xs text-gray-400">{{ data.paymentData.reference }}</span></div>
+          <div class="flex justify-between border-t pt-3"><span class="text-gray-500">Prev. Payments</span><span class="font-medium">{{ data.paymentData.previousPayments }}</span></div>
+        }
+        @else if (data.recordType === 'compliance' && data.complianceData) {
+          <div class="flex justify-between"><span class="text-gray-500">Record ID</span><span class="font-medium">{{ data.complianceData.recordId }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Date</span><span class="font-medium">{{ data.complianceData.date }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Location</span><span class="font-medium text-right w-1/2">{{ data.complianceData.location }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Process Step</span><span class="font-medium text-right w-1/2">{{ data.complianceData.processStep }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Performed By</span><span class="font-medium">{{ data.complianceData.performedBy }}</span></div>
+          <div class="border-t pt-3 mt-2">
+             <p class="text-xs text-red-600 font-bold uppercase mb-1">Deviation Type</p>
+             <p class="text-red-700 font-medium">{{ data.complianceData.deviationType }}</p>
+          </div>
+        }
+        @else {
+          <div class="flex justify-between"><span class="text-gray-500">ID Number</span><span class="font-medium">{{ data.systemData?.idNumber }}</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Age</span><span class="font-medium">28 years</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Gender</span><span class="font-medium">Female</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Region</span><span class="font-medium">{{ data.systemData?.region }}</span></div>
+          <div class="flex justify-between border-t pt-3"><span class="text-gray-500">Anomalies Detected</span><span class="font-bold text-red-600">{{ data.anomalies.length }}</span></div>
+        }
+      </div>
+    </div>
+
+    <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      @if (data.recordType === 'payment' && data.paymentData) {
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-blue-50 text-blue-600 mt-1"><lucide-icon name="dollar-sign" class="w-6 h-6"></lucide-icon></div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Expected Amount</p>
+            <p class="text-xl font-bold text-gray-900">{{ formatMoney(data.paymentData.expectedAmount) }}</p>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-red-50 text-red-600 mt-1"><lucide-icon name="dollar-sign" class="w-6 h-6"></lucide-icon></div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Actual Amount Paid</p>
+            <p class="text-xl font-bold text-red-600">{{ formatMoney(data.paymentData.actualAmount) }}</p>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-orange-50 text-orange-600 mt-1"><lucide-icon name="trending-up" class="w-6 h-6"></lucide-icon></div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Overpayment</p>
+            <p class="text-xl font-bold text-orange-600">{{ formatMoney(data.paymentData.variance) }}</p>
+            <p class="text-sm font-medium text-gray-400 mt-1">+{{ data.paymentData.variancePercentage }}%</p>
+          </div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-purple-50 text-purple-600 mt-1"><lucide-icon name="calendar" class="w-6 h-6"></lucide-icon></div>
+          <div>
+            <p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Average Payment</p>
+            <p class="text-xl font-bold text-gray-900">{{ data.paymentData.averagePayment ? formatMoney(data.paymentData.averagePayment) : 'N/A' }}</p>
+            <p class="text-sm text-gray-400 mt-1">From {{ data.paymentData.previousPayments }} payments</p>
+          </div>
+        </div>
+      }
+
+      @else {
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-red-50 text-red-600 mt-1"><lucide-icon name="alert-circle" class="w-6 h-6"></lucide-icon></div>
+          <div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Fraud Score</p><p class="text-xl font-bold text-red-600">{{ data.fraudScore }}/100</p></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-orange-50 text-orange-600 mt-1"><lucide-icon name="alert-triangle" class="w-6 h-6"></lucide-icon></div>
+          <div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Total Anomalies</p><p class="text-xl font-bold text-orange-600">{{ data.anomalies.length }}</p></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-green-50 text-green-600 mt-1"><lucide-icon name="file-text" class="w-6 h-6"></lucide-icon></div>
+          <div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Document Status</p><p class="text-xl font-bold text-green-600">{{ data.documentMatched ? 'Matched' : 'Mismatch' }}</p></div>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4">
+          <div class="p-3 rounded-lg bg-blue-50 text-blue-600 mt-1"><lucide-icon name="file-check" class="w-6 h-6"></lucide-icon></div>
+          <div><p class="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">OCR Confidence</p><p class="text-xl font-bold text-blue-600">{{ data.ocrData?.confidence || 0 }}%</p></div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="mb-8"><app-anomalies-detected [anomalies]="data.anomalies"></app-anomalies-detected></div>
+
+  <!-- Comparison Tables -->
+  @if (data.recordType === 'identity' && identityComparison().length > 0) {
+    <app-comparison-table 
+      title="Data Comparison: System vs Document"
+      [data]="identityComparison()"
+      leftColumnLabel="System Data"
+      rightColumnLabel="Document Data">
+    </app-comparison-table>
+  }
+
+  @if (data.recordType === 'payment' && paymentComparison().length > 0) {
+    <app-comparison-table 
+      title="Payment Data Comparison: Expected vs Actual"
+      [data]="paymentComparison()"
+      leftColumnLabel="Expected"
+      rightColumnLabel="Actual"
+      [formatFunction]="formatForComparison">
+    </app-comparison-table>
+  }
+
+  @if (data.recordType === 'compliance' && complianceComparison().length > 0) {
+    <app-comparison-table 
+      title="Compliance Data Comparison: Expected vs Actual"
+      [data]="complianceComparison()"
+      leftColumnLabel="Expected"
+      rightColumnLabel="Actual">
+    </app-comparison-table>
+  }
+
+  @if (data.recordType === 'identity' && data.ocrData) {
+    <app-ocr-document-viewer [imageSrc]="data.documentImage || 'assets/images/placeholder-id.jpg'" [data]="data.ocrData"></app-ocr-document-viewer>
+  }
+
+</div>
+} @else {
+  <div class="h-screen flex items-center justify-center"><div class="animate-pulse text-brand-blue font-medium">Loading...</div></div>
+}

@@ -1,0 +1,105 @@
+<div class="p-6 min-h-screen bg-gray-50/50">
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    @for (stat of stats(); track stat.label) {
+      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+        <div class="mb-4">
+          <div [ngClass]="{
+            'bg-blue-500': stat.color === 'blue',
+            'bg-purple-500': stat.color === 'purple',
+            'bg-green-500': stat.color === 'green',
+            'bg-[#F2C94C]': stat.color === 'orange'
+          }" class="w-10 h-10 rounded-lg flex items-center justify-center text-white shadow-sm">
+            <lucide-icon [name]="stat.icon" class="w-5 h-5"></lucide-icon>
+          </div>
+        </div>
+        <p class="text-gray-500 text-sm font-medium mb-1">{{ stat.label }}</p>
+        <h2 class="text-2xl font-bold text-[#1F3A7D] mb-1">{{ stat.value }}</h2>
+        <p class="text-xs text-gray-400">{{ stat.desc }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm mb-8">
+    <h3 class="text-[#1F3A7D] font-semibold mb-2">Quick Actions</h3>
+    <p class="text-sm text-gray-500 mb-6 max-w-3xl">
+      Upload data (CSV/Excel) or documents for automated fraud detection, duplicate identification, and compliance analysis across all sensitive sectors
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <button class="flex items-center gap-2 px-6 py-2.5 bg-[#1F3A7D] text-white text-sm font-medium rounded-lg hover:bg-[#2B4C9F] transition-colors shadow-sm">
+        <lucide-icon name="upload" class="w-4 h-4"></lucide-icon>
+        Upload Data (CSV/Excel)
+      </button>
+      <button class="flex items-center gap-2 px-6 py-2.5 bg-[#F2C94C] text-gray-900 text-sm font-medium rounded-lg hover:bg-[#E5B93C] transition-colors shadow-sm">
+        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon>
+        Upload Document (OCR)
+      </button>
+    </div>
+  </div>
+
+  <app-organizational-health
+    [highRiskCases]="riskData().highRiskCases"
+    [totalCases]="riskData().totalAnalyzed">
+  </app-organizational-health>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col">
+      <h3 class="text-[#1F3A7D] font-semibold mb-6">Analysis Types</h3>
+
+      <div class="flex-grow flex items-center justify-center min-h-[200px]">
+        <app-fraud-types-chart></app-fraud-types-chart>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 mt-6">
+        <div class="text-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+          <p class="text-xs text-gray-500 mb-1">Document Analysis</p>
+          <p class="text-lg font-bold text-[#1F3A7D]">{{ analysisData().document }}%</p>
+        </div>
+        <div class="text-center p-3 bg-green-50 rounded-lg border border-green-100">
+          <p class="text-xs text-gray-500 mb-1">Payment Analysis</p>
+          <p class="text-lg font-bold text-green-600">{{ analysisData().payment }}%</p>
+        </div>
+        <div class="text-center p-3 bg-purple-50 rounded-lg border border-purple-100">
+          <p class="text-xs text-gray-500 mb-1">Compliance</p>
+          <p class="text-lg font-bold text-purple-600">{{ analysisData().compliance }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col">
+      <h3 class="text-[#1F3A7D] font-semibold mb-6">Template Matching Accuracy</h3>
+
+      <div class="flex-grow min-h-[200px]">
+        <app-fraud-score-chart></app-fraud-score-chart>
+      </div>
+
+      <div class="mt-6 space-y-3">
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+            <span class="text-gray-600">Perfect Match</span>
+          </div>
+          <span class="font-bold text-gray-900">{{ matchingData().perfect }}%</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span class="text-gray-600">High Confidence</span>
+          </div>
+          <span class="font-bold text-gray-900">{{ matchingData().high }}%</span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-orange-500"></div>
+            <span class="text-gray-600">Mismatch</span>
+          </div>
+          <span class="font-bold text-gray-900">{{ matchingData().mismatch }}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-sectors-application></app-sectors-application>
+
+</div>

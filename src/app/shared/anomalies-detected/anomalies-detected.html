@@ -1,0 +1,19 @@
+<div class="anomalies-container">
+  <p class="section-title text-gray-600">Anomalies Detected</p>
+  <div class="anomalies-list">
+    @for (anomaly of anomalies; track anomaly.title) {
+      <div class="anomaly-item">
+        <div class="anomaly-icon">
+          <lucide-icon [name]="getIcon(anomaly.severity)" [class]="'icon-' + anomaly.severity.toLowerCase()"></lucide-icon>
+        </div>
+        <div class="anomaly-content">
+          <div class="anomaly-header">
+            <span className="flex items-center gap-2 text-green-600" class="anomaly-title">{{ anomaly.title }}</span>
+            <nz-tag [nzColor]="getSeverityColor(anomaly.severity)">{{ anomaly.severity }}</nz-tag>
+          </div>
+          <p class="anomaly-description">{{ anomaly.description }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

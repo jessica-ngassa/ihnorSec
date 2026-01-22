@@ -1,0 +1,47 @@
+<div class="login-container">
+  <div class="login-card">
+
+    <div class="login-header">
+      <div class="logo-container">
+        <lucide-icon name="shield" class="logo-icon"></lucide-icon>
+      </div>
+      <h1>IHNOR Secure</h1>
+      <p>Fraud Detection & Compliance Platform</p>
+    </div>
+
+    <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>Email Address</nz-form-label>
+        <nz-form-control nzErrorTip="Please input your email!">
+          <input
+            nz-input
+            formControlName="email"
+            placeholder="Enter your email"
+            class="custom-input"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Password</nz-form-label>
+        <nz-form-control nzErrorTip="Please input your password!">
+          <input
+            nz-input
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="custom-input"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <button nz-button nzType="primary" nzBlock [nzLoading]="isLoading()" class="login-btn">
+        Login
+      </button>
+    </form>
+
+    <div class="footer-note">
+      Secure authentication for government institutions
+    </div>
+  </div>
+</div>

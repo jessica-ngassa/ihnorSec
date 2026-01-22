@@ -1,1 +1,70 @@
-/* You can add global styles to this file, and also import other style files */
+
+@import "tailwindcss";
+@import "./tailwind-theme.css";
+
+@layer base {
+  html, body {
+    @apply h-full m-0 bg-[#F8F9FA] text-gray-900;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  // Typography
+  // h1 { @apply text-2xl font-medium leading-normal text-brand-blue; }
+  // h2 { @apply text-xl font-medium leading-normal; }
+  // button, label { @apply text-base font-medium leading-normal; }
+  // input { @apply text-base font-normal leading-normal; }
+
+   h1 { 
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+  svg, img { display: inline-block; }
+}
+
+@layer components {
+  .btn-upload-primary {
+    @apply bg-brand-blue text-white border-none h-11 px-6 rounded-lg font-medium transition-all hover:opacity-90;
+  }
+
+  .btn-upload-secondary {
+    @apply bg-warning-yellow text-brand-blue border-none h-11 px-6 rounded-lg font-medium transition-all hover:brightness-95;
+  }
+}
