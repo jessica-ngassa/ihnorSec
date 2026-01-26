@@ -1,7 +1,7 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TableColumn } from '../../../shared/model/tableColumn';
-import { DataTable } from '../../../shared/data-table/data-table';
+import { DataTable } from '../../../shared/components/data-table/data-table';
 import { LucideAngularModule } from "lucide-angular";
 import { TableFilter } from '../../../shared/table-filter/table-filter';
 import { Router } from '@angular/router';

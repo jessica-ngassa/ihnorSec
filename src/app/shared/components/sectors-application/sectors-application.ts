@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SectorData } from '../model/dashboard.interface';
+import { SectorData } from '../../model/dashboard.interface';
 
 @Component({
   selector: 'app-sectors-application',

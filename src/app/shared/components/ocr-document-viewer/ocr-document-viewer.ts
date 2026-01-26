@@ -1,7 +1,7 @@
 import { Component, computed, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { OcrResult } from '../model/ocr-data.interface';
+import { OcrResult } from '../../model/ocr-data.interface';
 
 @Component({
   selector: 'app-ocr-document-viewer',

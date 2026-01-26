@@ -10,10 +10,10 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { LucideAngularModule } from "lucide-angular";
 import { CommonModule } from '@angular/common';
-import { FraudTypesChart } from '../../shared/fraud-types-chart/fraud-types-chart';
-import { FraudScoreChart } from '../../shared/fraud-score-chart/fraud-score-chart';
-import { SectorsApplication } from "../../shared/sectors-application/sectors-application";
-import { OrganizationalHealth } from "../../shared/organizational-health/organizational-health";
+import { FraudTypesChart } from '../../shared/components/fraud-types-chart/fraud-types-chart';
+import { FraudScoreChart } from '../../shared/components/fraud-score-chart/fraud-score-chart';
+import { SectorsApplication } from "../../shared/components/sectors-application/sectors-application";
+import { OrganizationalHealth } from "../../shared/components/organizational-health/organizational-health";
 import { DashboardService } from '../../shared/services/dashboard.service';
 
 @Component({

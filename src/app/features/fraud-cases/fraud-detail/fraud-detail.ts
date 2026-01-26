@@ -82,11 +82,11 @@ import { LucideAngularModule } from 'lucide-angular';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 
-import { AnomaliesDetected } from '../../../shared/anomalies-detected/anomalies-detected';
-import { OcrDocumentViewer } from '../../../shared/ocr-document-viewer/ocr-document-viewer';
-import { ProfileSummary } from '../../../shared/profile-summary/profile-summary';
+import { AnomaliesDetected } from '../../../shared/components/anomalies-detected/anomalies-detected';
+import { OcrDocumentViewer } from '../../../shared/components/ocr-document-viewer/ocr-document-viewer';
+import { ProfileSummary } from '../../../shared/components/profile-summary/profile-summary';
 import { FraudService } from '../../../shared/services/fraud.service';
-import { ComparisonTable } from '../../../shared/comparison-table/comparison-table';
+import { ComparisonTable } from '../../../shared/components/comparison-table/comparison-table';
 
 @Component({
   selector: 'app-fraud-detail',

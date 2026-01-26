@@ -4,7 +4,7 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { LucideAngularModule } from 'lucide-angular';
-import { TableColumn } from '../model/tableColumn';
+import { TableColumn } from '../../model/tableColumn';
 
 @Component({
   selector: 'app-data-table',

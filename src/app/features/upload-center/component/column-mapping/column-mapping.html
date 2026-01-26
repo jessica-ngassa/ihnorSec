@@ -1,0 +1,43 @@
+<div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+  <h3 class="text-sm font-semibold text-gray-900 mb-4">Column Mapping Preview</h3>
+
+  <div class="space-y-3">
+    @for (map of mappings(); track map.sourceColumn) {
+      <div
+        class="flex items-center justify-between p-3 rounded-lg border transition-colors"
+        [class.bg-gray-50]="map.confidence === 'auto'"
+        [class.border-gray-100]="map.confidence === 'auto'"
+        [class.bg-orange-50]="map.confidence === 'manual'"
+        [class.border-orange-100]="map.confidence === 'manual'"
+      >
+        <div class="w-1/3">
+          <p class="text-[10px] uppercase text-gray-400 font-bold mb-1">Source Column</p>
+          <p class="font-mono text-sm font-medium text-gray-700">{{ map.sourceColumn }}</p>
+        </div>
+
+        <lucide-icon name="arrow-right" class="w-4 h-4 text-gray-300"></lucide-icon>
+
+        <div class="w-1/3">
+          <p class="text-[10px] uppercase text-gray-400 font-bold mb-1">Target Field</p>
+          <p class="font-mono text-sm font-medium text-[#1F3A7D]">{{ map.targetField }}</p>
+        </div>
+
+        @if (map.confidence === 'auto') {
+          <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded font-medium"
+            >Auto-mapped</span
+          >
+        } @else {
+          <span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded font-medium"
+            >Manual Check</span
+          >
+        }
+      </div>
+    }
+
+    @if (mappings().length === 0) {
+      <div class="text-center py-4 text-gray-400 text-sm italic">
+        Upload a file to see column mapping suggestions
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="bg-white rounded-xl border border-gray-200 p-8 mt-6">
+  <div class="flex items-center gap-3 mb-2">
+    <div class="animate-spin text-blue-600">
+      <lucide-icon name="loader-2" class="w-5 h-5"></lucide-icon>
+    </div>
+    <h3 class="text-sm font-semibold text-gray-900">Validating data fields...</h3>
+  </div>
+  <p class="text-xs text-gray-500 mb-6 pl-8">Processing 208 records...</p>
+
+  <div class="w-full bg-gray-100 rounded-full h-2 mb-2">
+    <div
+      class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+      [style.width.%]="progress()"
+    ></div>
+  </div>
+  <div class="flex justify-end mb-8">
+    <span class="text-xs font-medium text-blue-600">{{ progress() }}%</span>
+  </div>
+
+  <div class="space-y-3">
+    <div class="flex items-center gap-2 text-xs">
+      <lucide-icon name="check-circle" class="w-4 h-4 text-green-500"></lucide-icon>
+      <span class="text-green-700 font-medium">File uploaded successfully</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs" [class.text-gray-400]="progress() < 25">
+      <lucide-icon *ngIf="progress() >= 25" name="check-circle" class="w-4 h-4 text-green-500"></lucide-icon>
+      <div *ngIf="progress() < 25" class="w-4 h-4 rounded-full border-2 border-gray-200"></div>
+      <span [class.text-green-700]="progress() >= 25" [class.font-medium]="progress() >= 25">Data parsed and validated</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs" [class.text-gray-400]="progress() < 75">
+      <lucide-icon *ngIf="progress() >= 75" name="check-circle" class="w-4 h-4 text-green-500"></lucide-icon>
+      <div *ngIf="progress() < 75" class="w-4 h-4 rounded-full border-2 border-gray-200"></div>
+      <span [class.text-green-700]="progress() >= 75" [class.font-medium]="progress() >= 75">Fraud detection algorithms running</span>
+    </div>
+    <div class="flex items-center gap-2 text-xs" [class.text-gray-400]="progress() < 100">
+      <lucide-icon *ngIf="progress() >= 100" name="check-circle" class="w-4 h-4 text-green-500"></lucide-icon>
+      <div *ngIf="progress() < 100" class="w-4 h-4 rounded-full border-2 border-gray-200"></div>
+      <span [class.text-green-700]="progress() >= 100" [class.font-medium]="progress() >= 100">Analysis complete</span>
+    </div>
+  </div>
+</div>

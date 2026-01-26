@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { Header } from '../../shared/header/header';
+import { Header } from '../../shared/components/header/header';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
@@ -23,6 +23,11 @@ export class MainLayout {
        icon: 'dashboard',
        label: 'Dashboard'
       },
+    {
+      path: '/upload',
+      icon: 'upload',
+      label: 'Uploads'
+    },
     {
       path: '/fraud',
       icon: 'warning',

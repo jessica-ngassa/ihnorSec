@@ -350,7 +350,7 @@ export class FraudService {
       idNumber: 'FOOD-2024-001',
       fraudScore: 88,
       status: 'High Risk',
-      documentMatched: true, // Reused for Status Card
+      documentMatched: true,
       complianceData: {
         recordId: 'COMP-FOOD-20240510',
         date: '10/05/2024',
@@ -365,7 +365,7 @@ export class FraudService {
         expectedMeasurement: '4°C',
         measurement: '12°C'
       },
-      ocrData: { // Needed to prevent errors in UI if accessed
+      ocrData: {
         name: 'Le Gourmet', dob: '', idNumber: '', issueDate: '', expiryDate: '', address: '', confidence: 85.0
       },
       anomalies: [
