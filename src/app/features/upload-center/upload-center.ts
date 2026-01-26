@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 import { DocumentTypeSelector } from './component/import-document/document-type-selector/document-type-selector';
 import { DocumentValidation } from './component/import-document/document-validation/document-validation';
 import { ValidationResult } from '../../shared/model/documentation-validation';
+import { TranslationService } from '../../shared/services/translation.service';
 
 @Component({
   selector: 'app-upload-center',
@@ -35,6 +36,7 @@ import { ValidationResult } from '../../shared/model/documentation-validation';
 })
 export class UploadCenterComponent {
   private router = inject(Router);
+  translationService = inject(TranslationService);
 
   // Global State
   activeTab = signal<'data' | 'document'>('data');

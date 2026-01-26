@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="upload.title" datatype="html">
+        <source>Upload Center</source>
+        <target>Upload Center</target>
+      </trans-unit>
+      <trans-unit id="upload.description" datatype="html">
+        <source>Import data files or upload documents for OCR analysis and fraud detection</source>
+        <target>Import data files or upload documents for OCR analysis and fraud detection</target>
+      </trans-unit>
+      <trans-unit id="upload.tab.data" datatype="html">
+        <source>Import Data (CSV/Excel)</source>
+        <target>Import Data (CSV/Excel)</target>
+      </trans-unit>
+      <trans-unit id="upload.tab.document" datatype="html">
+        <source>Import Documents (OCR)</source>
+        <target>Import Documents (OCR)</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

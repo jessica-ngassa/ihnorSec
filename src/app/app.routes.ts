@@ -35,6 +35,40 @@ export const routes: Routes = [
         path: 'document',
         loadComponent: () => import('./features/document/document').then(m => m.Document)
       },
+      {
+        path: 'reports',
+        loadComponent: () => import('./features/reports/reports').then(m => m.Reports)
+      },
+      {
+        path: 'config',
+        children: [
+          {
+            path: 'modules',
+            loadComponent: () => import('./features/config/modules/modules').then(m => m.Modules)
+          },
+          {
+            path: 'detection-rules',
+            loadComponent: () => import('./features/config/detection-rules/detection-rules').then(m => m.DetectionRules)
+          },
+          {
+            path: 'data-mapping',
+            loadComponent: () => import('./features/config/data-mapping/data-mapping').then(m => m.DataMapping)
+          },
+          {
+            path: 'agency-settings',
+            loadComponent: () => import('./features/config/agency-settings/agency-settings').then(m => m.AgencySettings)
+          }
+        ]
+      },
+      {
+        path: 'admin',
+        children: [
+          {
+            path: 'multi-tenant',
+            loadComponent: () => import('./features/tenant/tenant').then(m => m.MultiTenant)
+          }
+        ]
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

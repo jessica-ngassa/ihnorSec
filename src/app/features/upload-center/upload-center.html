@@ -1,8 +1,8 @@
 <div class="p-8 bg-gray-50/50 min-h-screen">
   <div class="mb-8">
-    <h1 class="text-2xl font-semibold text-[#1F3A7D] mb-1">Upload Center</h1>
+    <h1 class="text-2xl font-semibold text-[#1F3A7D] mb-1">{{ translationService.translate('upload.title') }}</h1>
     <p class="text-gray-500 text-sm">
-      Import data files or upload documents for OCR analysis and fraud detection
+      {{ translationService.translate('upload.description') }}
     </p>
   </div>
 
@@ -14,7 +14,7 @@
         [class.text-[#1F3A7D]]="activeTab() === 'data'"
         [class.text-gray-500]="activeTab() !== 'data'"
       >
-        <lucide-icon name="file-spreadsheet" class="w-4 h-4"></lucide-icon> Import Data (CSV/Excel)
+        <lucide-icon name="file-spreadsheet" class="w-4 h-4"></lucide-icon> <span>{{ translationService.translate('upload.tab.data') }}</span>
         <div
           *ngIf="activeTab() === 'data'"
           class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"
@@ -27,7 +27,7 @@
         [class.text-[#1F3A7D]]="activeTab() === 'document'"
         [class.text-gray-500]="activeTab() !== 'document'"
       >
-        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon> Import Documents (OCR)
+        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon> <span>{{ translationService.translate('upload.tab.document') }}</span>
         <div
           *ngIf="activeTab() === 'document'"
           class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"
