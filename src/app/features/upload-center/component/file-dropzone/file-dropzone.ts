@@ -10,13 +10,55 @@ import { LucideAngularModule } from 'lucide-angular';
   styleUrl: './file-dropzone.scss',
 })
 export class FileDropzone {
+  // supportedFormats = input<string>('Supported formats: CSV, XLSX, XLS (Max 50MB)');
+  // disabled = input<boolean>(false);
+  // fileSelected = output<File>();
+  // isDragging = signal(false);
+
+  // onDragOver(e: DragEvent) {
+  //   e.preventDefault();
+  //   if (!this.disabled()) {
+  //     this.isDragging.set(true);
+  //   }
+  // }
+
+  // onDragLeave(e: DragEvent) {
+  //   e.preventDefault();
+  //   this.isDragging.set(false);
+  // }
+
+  // onDrop(e: DragEvent) {
+  //   e.preventDefault();
+  //   this.isDragging.set(false);
+  //   if (!this.disabled() && e.dataTransfer?.files.length) {
+  //     this.fileSelected.emit(e.dataTransfer.files[0]);
+  //   }
+  // }
+
+  // onFileSelected(event: any) {
+  //   if (!this.disabled() && event.target.files.length) {
+  //     this.fileSelected.emit(event.target.files[0]);
+  //   }
+  // }
+
+
+
   supportedFormats = input<string>('Supported formats: CSV, XLSX, XLS (Max 50MB)');
+  accept = input<string>('.csv,.xlsx,.xls');
   disabled = input<boolean>(false);
+
   fileSelected = output<File>();
   isDragging = signal(false);
 
+  // ViewChild reference not strictly needed if we use template variable in method
+  triggerFileInput() {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fileInput?.click();
+  }
+
   onDragOver(e: DragEvent) {
     e.preventDefault();
+    e.stopPropagation();
     if (!this.disabled()) {
       this.isDragging.set(true);
     }
@@ -24,20 +66,27 @@ export class FileDropzone {
 
   onDragLeave(e: DragEvent) {
     e.preventDefault();
+    e.stopPropagation();
     this.isDragging.set(false);
   }
 
   onDrop(e: DragEvent) {
     e.preventDefault();
+    e.stopPropagation();
     this.isDragging.set(false);
-    if (!this.disabled() && e.dataTransfer?.files.length) {
+
+    if (this.disabled()) return;
+
+    if (e.dataTransfer?.files.length) {
       this.fileSelected.emit(e.dataTransfer.files[0]);
     }
   }
 
   onFileSelected(event: any) {
-    if (!this.disabled() && event.target.files.length) {
+    if (event.target.files.length) {
       this.fileSelected.emit(event.target.files[0]);
+      // Reset input value so same file can be selected again if needed
+      event.target.value = '';
     }
   }
 

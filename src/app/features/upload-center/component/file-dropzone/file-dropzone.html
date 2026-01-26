@@ -31,44 +31,38 @@
 
 <div
       class="border-2 border-dashed rounded-xl h-60 flex flex-col items-center justify-center transition-all duration-200 group bg-white"
-      [class.border-brand-blue]="isDragging() && !disabled()"
-      [class.bg-blue-50]="isDragging() && !disabled()"
-      [class.border-gray-300]="!isDragging() && !disabled()"
-      [class.border-gray-200]="disabled()"
-      [class.bg-gray-50]="disabled()"
+      [class.border-[#1F3A7D]]="isDragging()"
+      [class.bg-blue-50]="isDragging()"
+      [class.border-gray-300]="!isDragging()"
       [class.opacity-50]="disabled()"
-      (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+      [class.cursor-not-allowed]="disabled()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="!disabled() && triggerFileInput()">
 
-      <div class="mb-3 p-3 bg-gray-50 rounded-full transition-transform"
-           [class.group-hover:scale-110]="!disabled()">
-        <lucide-icon name="upload" class="w-8 h-8"
-                     [class.text-gray-400]="!disabled()"
-                     [class.text-gray-300]="disabled()"></lucide-icon>
+      <div class="mb-3 p-3 bg-gray-50 rounded-full group-hover:scale-110 transition-transform">
+        <lucide-icon name="upload" class="w-8 h-8 text-gray-400"></lucide-icon>
       </div>
 
-      <h3 class="text-base font-semibold mb-1"
-          [class.text-gray-900]="!disabled()"
-          [class.text-gray-400]="disabled()">
-        {{ disabled() ? 'Select a data type first' : 'Drag and drop your file here' }}
-      </h3>
-      <p class="text-xs mb-4"
-         [class.text-gray-500]="!disabled()"
-         [class.text-gray-400]="disabled()">
-        {{ disabled() ? 'Choose from the options above to enable file upload' : 'or click the button below to browse' }}
-      </p>
+      <h3 class="text-base font-semibold text-gray-900 mb-1">Drag and drop your file here</h3>
+      <p class="text-xs text-gray-500 mb-4">or click to browse</p>
 
-      <button class="px-6 py-2 rounded-lg transition-colors text-xs font-bold uppercase tracking-wide"
-              [class.bg-[#1F3A7D]]="!disabled()"
-              [class.text-white]="!disabled()"
-              [class.hover:bg-[#2B4C9F]]="!disabled()"
-              [class.bg-gray-300]="disabled()"
-              [class.text-gray-500]="disabled()"
-              [class.cursor-not-allowed]="disabled()"
-              [disabled]="disabled()"
-              (click)="!disabled() && fileInput.click()">
+      <button
+        type="button"
+        (click)="$event.stopPropagation(); triggerFileInput()"
+        [disabled]="disabled()"
+        class="px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] transition-colors text-xs font-bold uppercase tracking-wide disabled:bg-gray-400">
         Select File
       </button>
 
       <p class="mt-4 text-[10px] text-gray-400">{{ supportedFormats() }}</p>
-      <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" accept=".csv,.xlsx,.xls" [disabled]="disabled()" />
+
+      <input
+        type="file"
+        #fileInput
+        class="hidden"
+        (change)="onFileSelected($event)"
+        [accept]="accept()"
+      />
     </div>

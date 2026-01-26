@@ -10,14 +10,13 @@ import { LucideAngularModule } from 'lucide-angular';
 })
 export class DataTypeSelector {
   initialSelection = input<string>('');
-  readonly = input<boolean>(false); // Controlled by parent
+  readonly = input<boolean>(false);
   typeSelected = output<string>();
 
   selected = signal<string>('');
 
   constructor() {
     effect(() => {
-      // Initialize selection if provided
       if (this.initialSelection()) {
         this.selected.set(this.initialSelection());
       }

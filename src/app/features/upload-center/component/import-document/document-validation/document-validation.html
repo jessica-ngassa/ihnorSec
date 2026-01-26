@@ -1,0 +1,50 @@
+@if (result(); as res) {
+      <div class="mb-6 border rounded-lg p-4 flex items-start gap-3 transition-colors animate-in fade-in slide-in-from-top-1"
+           [class.bg-blue-50]="res.status === 'validating'"
+           [class.border-blue-200]="res.status === 'validating'"
+           [class.bg-green-50]="res.status === 'match'"
+           [class.border-green-200]="res.status === 'match'"
+           [class.bg-orange-50]="res.status === 'mismatch'"
+           [class.border-orange-200]="res.status === 'mismatch'">
+
+        @if (res.status === 'validating') {
+          <div class="animate-spin text-blue-600 mt-0.5">
+            <lucide-icon name="loader-2" class="w-5 h-5"></lucide-icon>
+          </div>
+        } @else if (res.status === 'match') {
+          <div class="text-green-600 mt-0.5">
+            <lucide-icon name="check-circle-2" class="w-5 h-5"></lucide-icon>
+          </div>
+        } @else {
+          <div class="text-orange-600 mt-0.5">
+            <lucide-icon name="alert-circle" class="w-5 h-5"></lucide-icon>
+          </div>
+        }
+
+        <div>
+          <h4 class="text-sm font-semibold"
+              [class.text-blue-900]="res.status === 'validating'"
+              [class.text-green-900]="res.status === 'match'"
+              [class.text-orange-900]="res.status === 'mismatch'">
+            @switch (res.status) {
+              @case ('validating') { Analyzing document authenticity... }
+              @case ('match') { Document type matches your declaration }
+              @case ('mismatch') { Document type mismatch detected }
+            }
+          </h4>
+
+          @if (res.status !== 'validating') {
+            <p class="text-xs mt-1"
+               [class.text-green-700]="res.status === 'match'"
+               [class.text-orange-700]="res.status === 'mismatch'">
+              Confidence: {{ res.confidence }}%
+              @if (res.status === 'mismatch') {
+                • Detected: {{ res.detectedType }}
+              }
+            </p>
+          } @else {
+            <p class="text-xs text-blue-700 mt-1">Processing document features...</p>
+          }
+        </div>
+      </div>
+    }

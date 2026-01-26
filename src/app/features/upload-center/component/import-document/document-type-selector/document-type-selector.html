@@ -1,0 +1,43 @@
+<div class="mb-8">
+  <div class="flex items-center gap-1 mb-2">
+    <span class="text-red-500 font-bold">*</span>
+    <h3 class="text-sm font-semibold text-gray-900">
+      Step 1: What type of document are you uploading?
+    </h3>
+  </div>
+  <p class="text-xs text-gray-500 mb-6">
+    We'll verify if your uploaded documents match the type you declare
+  </p>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    @for (doc of docTypes; track doc.id) {
+      <button
+        (click)="!readonly() && select(doc.id)"
+        class="p-4 border rounded-xl flex flex-col items-center justify-center gap-3 transition-all duration-200 h-28 relative"
+        [class.border-[#1F3A7D]]="selected() === doc.id"
+        [class.bg-blue-50]="selected() === doc.id"
+        [class.border-gray-200]="selected() !== doc.id"
+        [class.bg-white]="selected() !== doc.id"
+        [class.opacity-60]="readonly() && selected() !== doc.id"
+        [class.cursor-default]="readonly()"
+        [class.hover:border-blue-300]="!readonly() && selected() !== doc.id"
+        [class.hover:shadow-sm]="!readonly()"
+      >
+        <span class="text-2xl">{{ doc.icon }}</span>
+        <span
+          class="text-xs font-medium text-center"
+          [class.text-[#1F3A7D]]="selected() === doc.id"
+          [class.text-gray-700]="selected() !== doc.id"
+        >
+          {{ doc.label }}
+        </span>
+
+        @if (selected() === doc.id) {
+          <div class="absolute top-2 right-2 text-[#1F3A7D]">
+            <lucide-icon name="check-circle-2" class="w-4 h-4"></lucide-icon>
+          </div>
+        }
+      </button>
+    }
+  </div>
+</div>

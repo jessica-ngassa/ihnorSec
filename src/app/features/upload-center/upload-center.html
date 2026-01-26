@@ -1,246 +1,219 @@
-<!-- <div class="p-8 bg-gray-50/50 min-h-screen">
-
-  <div class="mb-8">
-    <h1 class="text-2xl font-semibold text-[#1F3A7D] mb-1">Upload Center</h1>
-    <p class="text-gray-500 text-sm">Import data files or upload documents for OCR analysis</p>
-  </div>
-
-  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[600px]">
-
-    <div class="flex border-b border-gray-200">
-      <button (click)="setTab('data')" class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 transition-all relative"
-        [class.text-[#1F3A7D]]="activeTab() === 'data'" [class.bg-blue-50]="activeTab() === 'data'" [class.text-gray-500]="activeTab() !== 'data'">
-        <lucide-icon name="file-spreadsheet" class="w-4 h-4"></lucide-icon> Import Data (CSV/Excel)
-        <div *ngIf="activeTab() === 'data'" class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"></div>
-      </button>
-
-      <button (click)="setTab('document')" class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 transition-all relative"
-        [class.text-[#1F3A7D]]="activeTab() === 'document'" [class.bg-blue-50]="activeTab() === 'document'" [class.text-gray-500]="activeTab() !== 'document'">
-        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon> Import Documents (OCR)
-        <div *ngIf="activeTab() === 'document'" class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"></div>
-      </button>
-    </div>
-
-    <div class="p-8">
-
-      @if (activeTab() === 'data') {
-        <app-file-dropzone (fileSelected)="handleFile($event)"></app-file-dropzone>
-
-        <div class="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-5">
-          <h4 class="text-[#1F3A7D] font-medium text-sm mb-3">File Requirements</h4>
-          <ul class="space-y-2">
-            @for (requirement of fileRequirements; track requirement) {
-              <li class="flex items-center gap-2 text-xs text-gray-600">
-                <lucide-icon name="check-circle-2" class="w-4 h-4 text-blue-500"></lucide-icon>
-                {{ requirement }}
-              </li>
-            }
-          </ul>
-        </div>
-
-        @if (isAnalyzing()) {
-          <div class="mt-8 text-center text-gray-500 py-8">
-            <div class="animate-spin inline-block w-6 h-6 border-2 border-brand-blue border-t-transparent rounded-full mb-2"></div>
-            <p class="text-sm">Analyzing file structure...</p>
-          </div>
-        } @else {
-          <app-column-mapping [mappings]="columnMappings()"></app-column-mapping>
-        }
-
-
-        <div class="mt-8 flex justify-end">
-          <button class="px-6 py-2.5 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] font-medium text-sm shadow-sm transition-colors" [disabled]="columnMappings().length === 0">
-            Launch Analysis
-          </button>
-        </div>
-      }
-
-      @if (activeTab() === 'document') {
-
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 mb-3">Document Type</label>
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            @for (type of docTypes(); track type.id) {
-              <button
-                (click)="selectedDocType.set(type.id)"
-                class="p-4 rounded-xl border text-center transition-all duration-200 flex flex-col items-center gap-3 hover:border-[#1F3A7D] hover:bg-blue-50/30"
-                [class.border-[#1F3A7D]]="selectedDocType() === type.id"
-                [class.bg-blue-50]="selectedDocType() === type.id"
-                [class.border-gray-200]="selectedDocType() !== type.id">
-                <div class="p-2 rounded-lg" [class.bg-white]="selectedDocType() === type.id">
-                  <lucide-icon [name]="type.icon" class="w-6 h-6"
-                    [class.text-[#1F3A7D]]="selectedDocType() === type.id"
-                    [class.text-blue-500]="selectedDocType() !== type.id && type.color === 'blue'"
-                    [class.text-green-500]="selectedDocType() !== type.id && type.color === 'green'"
-                    [class.text-purple-500]="selectedDocType() !== type.id && type.color === 'purple'"
-                    [class.text-orange-500]="selectedDocType() !== type.id && type.color === 'orange'"
-                    [class.text-gray-500]="selectedDocType() !== type.id && !type.color">
-                  </lucide-icon>
-                </div>
-                <span class="text-xs font-medium"
-                  [class.text-[#1F3A7D]]="selectedDocType() === type.id"
-                  [class.text-gray-600]="selectedDocType() !== type.id">
-                  {{ type.label }}
-                </span>
-              </button>
-            }
-          </div>
-        </div>
-
-        <div class="mb-6 flex items-start gap-3 p-4 bg-blue-50 border border-blue-100 rounded-lg">
-          <lucide-icon name="info" class="w-5 h-5 text-blue-600 shrink-0 mt-0.5"></lucide-icon>
-          <div>
-            <h4 class="text-sm font-medium text-blue-900">Bulk Document Upload Supported</h4>
-            <p class="text-xs text-blue-700 mt-1">You can upload multiple documents at once. Each document will be processed individually with OCR and linked to corresponding records.</p>
-          </div>
-        </div>
-
-        <app-file-dropzone
-          supportedFormats="Supported formats: JPG, PNG, PDF (Max 10MB per file)"
-          (fileSelected)="handleFile($event)">
-        </app-file-dropzone>
-
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-
-          <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">Expected Fields ({{ selectedDocType() }})</h4>
-            <div class="space-y-2">
-              <div class="flex justify-between text-xs py-2 border-b border-gray-200">
-                <span class="text-gray-600">Full Name</span>
-                <span class="text-gray-400 italic">Pending OCR</span>
-              </div>
-              <div class="flex justify-between text-xs py-2 border-b border-gray-200">
-                <span class="text-gray-600">ID Number</span>
-                <span class="text-gray-400 italic">Pending OCR</span>
-              </div>
-              <div class="flex justify-between text-xs py-2 border-b border-gray-200">
-                <span class="text-gray-600">Date of Birth</span>
-                <span class="text-gray-400 italic">Pending OCR</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">OCR Settings</h4>
-            <div class="space-y-3">
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked class="w-4 h-4 text-[#1F3A7D] rounded border-gray-300 focus:ring-[#1F3A7D]">
-                <span class="text-sm text-gray-600">Auto-detect template</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked class="w-4 h-4 text-[#1F3A7D] rounded border-gray-300 focus:ring-[#1F3A7D]">
-                <span class="text-sm text-gray-600">Validate against database</span>
-              </label>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked class="w-4 h-4 text-[#1F3A7D] rounded border-gray-300 focus:ring-[#1F3A7D]">
-                <span class="text-sm text-gray-600">Flag low confidence fields</span>
-              </label>
-            </div>
-
-            <div class="mt-6 p-4 bg-orange-50 border border-orange-100 rounded-lg">
-              <div class="flex items-center gap-2 mb-1">
-                <lucide-icon name="alert-circle" class="w-4 h-4 text-orange-600"></lucide-icon>
-                <span class="text-xs font-bold text-orange-800 uppercase">Quality Tips</span>
-              </div>
-              <p class="text-xs text-orange-700">Ensure documents are well-lit, flat, and in focus for best OCR accuracy.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-8 flex justify-end gap-3 pt-6 border-t border-gray-100">
-          <button class="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm transition-colors">
-            Preview OCR
-          </button>
-          <button class="px-6 py-2.5 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] font-medium text-sm shadow-sm transition-colors">
-            Process Documents
-          </button>
-        </div>
-      }
-
-    </div>
-  </div>
-</div> -->
-
-
 <div class="p-8 bg-gray-50/50 min-h-screen">
-
   <div class="mb-8">
     <h1 class="text-2xl font-semibold text-[#1F3A7D] mb-1">Upload Center</h1>
-    <p class="text-gray-500 text-sm">Import data files or upload documents for OCR analysis and fraud detection</p>
+    <p class="text-gray-500 text-sm">
+      Import data files or upload documents for OCR analysis and fraud detection
+    </p>
   </div>
 
-  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[700px]">
-
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[750px]">
     <div class="flex border-b border-gray-200">
       <button
         (click)="activeTab.set('data'); reset()"
         class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 transition-all relative"
         [class.text-[#1F3A7D]]="activeTab() === 'data'"
-        [class.text-gray-500]="activeTab() !== 'data'">
-        <lucide-icon name="file-spreadsheet" class="w-4 h-4"></lucide-icon>
-        Import Data (CSV/Excel)
-        <div *ngIf="activeTab() === 'data'" class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"></div>
+        [class.text-gray-500]="activeTab() !== 'data'"
+      >
+        <lucide-icon name="file-spreadsheet" class="w-4 h-4"></lucide-icon> Import Data (CSV/Excel)
+        <div
+          *ngIf="activeTab() === 'data'"
+          class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"
+        ></div>
       </button>
 
       <button
         (click)="activeTab.set('document'); reset()"
         class="flex-1 py-4 text-sm font-medium flex items-center justify-center gap-2 transition-all relative"
         [class.text-[#1F3A7D]]="activeTab() === 'document'"
-        [class.text-gray-500]="activeTab() !== 'document'">
-        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon>
-        Import Documents (OCR)
-        <div *ngIf="activeTab() === 'document'" class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"></div>
+        [class.text-gray-500]="activeTab() !== 'document'"
+      >
+        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon> Import Documents (OCR)
+        <div
+          *ngIf="activeTab() === 'document'"
+          class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"
+        ></div>
       </button>
     </div>
 
     <div class="p-8">
+      @if (activeTab() === 'document') {
+        @if (ocrStep() === 'success') {
+          <app-ocr-success (uploadMore)="reset()" (viewReport)="viewReport()"></app-ocr-success>
+        } @else {
+          <div
+            class="transition-opacity duration-300"
+            [class.opacity-50]="ocrStep() === 'processing'"
+          >
+            <app-document-type-selector
+              [initialSelection]="selectedDocType()"
+              [readonly]="ocrStep() === 'processing'"
+              (typeSelected)="onDocTypeSelected($event)"
+            >
+            </app-document-type-selector>
+          </div>
+
+          @if (ocrStep() === 'processing') {
+            <div class="mt-8">
+              <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                Step 2: Upload your documents
+              </h3>
+              <div class="bg-blue-50 rounded-xl p-8 border-2 border-blue-100">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="animate-spin text-blue-600">
+                    <lucide-icon name="loader-2" class="w-5 h-5"></lucide-icon>
+                  </div>
+                  <h3 class="text-sm font-semibold text-blue-900">
+                    Analyzing document authenticity...
+                  </h3>
+                </div>
+                <div class="w-full bg-blue-200 rounded-full h-2 mb-2">
+                  <div
+                    class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    [style.width.%]="progress()"
+                  ></div>
+                </div>
+                <span class="text-xs font-medium text-blue-700 float-right">{{ progress() }}%</span>
+              </div>
+            </div>
+          } @else {
+            <div class="mt-8">
+              <div
+                class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-3 mb-6"
+              >
+                <lucide-icon
+                  name="info"
+                  class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0"
+                ></lucide-icon>
+                <div>
+                  <p class="text-sm font-medium text-blue-900">Bulk Document Upload Supported</p>
+                  <p class="text-xs text-blue-700 mt-1">
+                    You can upload multiple documents at once (up to 50 files). Each will be
+                    processed with OCR individually.
+                  </p>
+                </div>
+              </div>
+
+              @if (validationResult()) {
+                <app-document-validation [result]="validationResult()"></app-document-validation>
+              }
+
+              <h3 class="text-sm font-semibold text-gray-900 mb-3">
+                Step 2: Upload your documents
+              </h3>
+
+              @if (!uploadedFile()) {
+                <app-file-dropzone
+                  accept=".jpg,.png,.pdf"
+                  supportedFormats="Supported formats: JPG, PNG, PDF (Max 10MB per file)"
+                  [disabled]="!selectedDocType()"
+                  (fileSelected)="onFileSelected($event)"
+                >
+                </app-file-dropzone>
+              } @else {
+                <div class="border rounded-lg p-4 mb-6 bg-white">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-medium text-gray-700">1 file selected</span>
+                    <button (click)="reset()" class="text-xs text-red-600 hover:underline">
+                      Remove
+                    </button>
+                  </div>
+                  <div
+                    class="flex items-center gap-3 p-3 bg-gray-50 rounded border border-gray-100"
+                  >
+                    <lucide-icon name="file-text" class="w-4 h-4 text-gray-400"></lucide-icon>
+                    <div class="flex flex-col">
+                      <span class="text-xs text-gray-700 font-medium">{{
+                        uploadedFile()?.name
+                      }}</span>
+                      <span class="text-[10px] text-gray-400"
+                        >{{ (uploadedFile()?.size || 0) / 1024 | number: '1.0-2' }} KB</span
+                      >
+                    </div>
+                  </div>
+
+                  @if (
+                    validationResult()?.status === 'match' ||
+                    validationResult()?.status === 'mismatch'
+                  ) {
+                    <div
+                      class="mt-2 bg-green-50 text-green-700 text-xs px-3 py-2 rounded flex items-center gap-2"
+                    >
+                      <lucide-icon name="check" class="w-3 h-3"></lucide-icon>
+                      Ready for OCR: 1 document will be processed
+                    </div>
+                  }
+                </div>
+
+                <div class="flex justify-end gap-3">
+                  <button
+                    (click)="reset()"
+                    class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    (click)="runDocumentAnalysis()"
+                    [disabled]="validationResult()?.status === 'validating'"
+                    class="px-6 py-2.5 bg-[#1F3A7D] text-white rounded-lg text-sm font-medium shadow-sm hover:bg-[#2B4C9F] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Process Documents (1)
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        }
+      }
 
       @if (activeTab() === 'data') {
-
         @if (uploadStep() === 'success') {
-          <app-upload-success
-            (uploadMore)="reset()"
-            (viewReport)="viewReport()">
+          <app-upload-success (uploadMore)="reset()" (viewReport)="viewReport()">
           </app-upload-success>
-        }
-
-        @else {
-
-          <div class="mb-8 transition-opacity duration-300" [class.opacity-50]="uploadStep() !== 'initial'">
+        } @else {
+          <div class="mb-8 transition-opacity duration-300">
             <app-data-type-selector
               [initialSelection]="selectedDataType()"
-              [readonly]="uploadStep() !== 'initial'"
-              (typeSelected)="selectedDataType.set($event)">
+              [readonly]="uploadStep() === 'processing'"
+              (typeSelected)="selectedDataType.set($event)"
+            >
             </app-data-type-selector>
           </div>
 
           <div>
             @switch (uploadStep()) {
-
               @case ('initial') {
                 <div class="mb-3">
                   <h3 class="text-sm font-semibold text-gray-900">Step 2: Upload your data file</h3>
                 </div>
 
-                <app-file-dropzone 
+                <app-file-dropzone
                   [disabled]="!selectedDataType()"
-                  (fileSelected)="onFileSelected($event)">
+                  (fileSelected)="onFileSelected($event)"
+                >
                 </app-file-dropzone>
 
                 <div class="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
                   <h4 class="text-[#1F3A7D] font-bold text-xs mb-2">File Requirements</h4>
                   <ul class="space-y-1">
                     <li class="flex items-center gap-2 text-xs text-gray-600">
-                      <lucide-icon name="check-circle-2" class="w-3 h-3 text-blue-600"></lucide-icon>
+                      <lucide-icon
+                        name="check-circle-2"
+                        class="w-3 h-3 text-blue-600"
+                      ></lucide-icon>
                       First row must contain column headers
                     </li>
                     <li class="flex items-center gap-2 text-xs text-gray-600">
-                      <lucide-icon name="check-circle-2" class="w-3 h-3 text-blue-600"></lucide-icon>
+                      <lucide-icon
+                        name="check-circle-2"
+                        class="w-3 h-3 text-blue-600"
+                      ></lucide-icon>
                       Date format: YYYY-MM-DD or DD/MM/YYYY
                     </li>
                     <li class="flex items-center gap-2 text-xs text-gray-600">
-                      <lucide-icon name="check-circle-2" class="w-3 h-3 text-blue-600"></lucide-icon>
+                      <lucide-icon
+                        name="check-circle-2"
+                        class="w-3 h-3 text-blue-600"
+                      ></lucide-icon>
                       UTF-8 encoding recommended
                     </li>
                   </ul>
@@ -258,8 +231,23 @@
                   [totalRows]="totalRows()"
                   (remove)="reset()"
                   (cancel)="reset()"
-                  (runAnalysis)="runAnalysis()">
+                >
                 </app-data-preview-table>
+
+                <div class="mt-6 flex justify-end gap-3">
+                  <button
+                    (click)="reset()"
+                    class="px-6 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    (click)="runDataAnalysis()"
+                    class="px-6 py-2.5 bg-[#1F3A7D] text-white rounded-lg text-sm font-medium shadow-sm hover:bg-[#2B4C9F] transition-colors"
+                  >
+                    {{ analysisButtonLabel() }}
+                  </button>
+                </div>
               }
 
               @case ('processing') {
@@ -273,14 +261,6 @@
           </div>
         }
       }
-
-      @if (activeTab() === 'document') {
-        <div class="flex flex-col items-center justify-center py-12 text-gray-400">
-          <lucide-icon name="file-image" class="w-12 h-12 mb-4"></lucide-icon>
-          <p>Document OCR Upload Flow</p>
-        </div>
-      }
-
     </div>
   </div>
 </div>

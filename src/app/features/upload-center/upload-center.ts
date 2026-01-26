@@ -1,91 +1,19 @@
-// import { Component, inject, signal } from '@angular/core';
-// import { FileDropzone } from "../../shared/components/file-dropzone/file-dropzone";
-// import { ColumnMappingComponent } from "./component/column-mapping/column-mapping";
-// import { LucideAngularModule } from "lucide-angular";
-// import { toSignal } from '@angular/core/rxjs-interop';
-// import { UploadService } from '../../shared/services/upload.service';
-// import { CommonModule } from '@angular/common';
-// import { ColumnMapping } from '../../shared/model/upload.model';
-
-// @Component({
-//   selector: 'app-upload-center',
-//   imports: [CommonModule, FileDropzone, ColumnMappingComponent, LucideAngularModule],
-//   standalone: true,
-//   templateUrl: './upload-center.html',
-//   styleUrl: './upload-center.scss',
-// })
-// export class UploadCenter {
-
-//   private uploadService = inject(UploadService);
-
-//   activeTab = signal<'data' | 'document'>('data');
-//   uploadedFile = signal<File | null>(null);
-//   isAnalyzing = signal(false);
-
-//   // 1. Fetch Doc Types from Backend (Signal)
-//   docTypes = toSignal(this.uploadService.getDocumentTypes(), { initialValue: [] });
-//   selectedDocType = signal<string>('cni');
-
-//   // 2. Store Mappings from Backend - Initialize with sample data
-//   columnMappings = signal<ColumnMapping[]>([
-//     { sourceColumn: 'NOM_COMPLET', targetField: 'full_name', confidence: 'auto' },
-//     { sourceColumn: 'NIF', targetField: 'id_number', confidence: 'auto' },
-//     { sourceColumn: 'DATE_NAISSANCE', targetField: 'date_of_birth', confidence: 'auto' },
-//     { sourceColumn: 'MONTANT', targetField: 'payment_amount', confidence: 'manual' }
-//   ]);
-
-//   // File requirements
-//   fileRequirements = [
-//     'First row must contain column headers',
-//     'Required fields: full_name, id_number, payment_amount',
-//     'Date format: YYYY-MM-DD or DD/MM/YYYY',
-//     'UTF-8 encoding recommended for special characters'
-//   ];
-
-//   // Handle File Selection
-//   handleFile(file: File) {
-//     this.uploadedFile.set(file);
-
-//     // If we are on the Data tab, fetch mappings immediately
-//     if (this.activeTab() === 'data') {
-//       this.isAnalyzing.set(true);
-//       this.uploadService.analyzeFileColumns(file).subscribe({
-//         next: (mappings) => {
-//           this.columnMappings.set(mappings);
-//           this.isAnalyzing.set(false);
-//         },
-//         error: (err) => {
-//           console.error(err);
-//           this.isAnalyzing.set(false);
-//         }
-//       });
-//     }
-//   }
-
-//   setTab(tab: 'data' | 'document') {
-//     this.activeTab.set(tab);
-//     this.uploadedFile.set(null);
-//     this.columnMappings.set([]); // Reset mappings on tab switch
-//   }
-// }
-
-
-
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
 import { Router } from '@angular/router';
 import { FileDropzone } from './component/file-dropzone/file-dropzone';
-import { DataTypeSelector } from './component/data-type-selector/data-type-selector';
+import { DataTypeSelector } from './component/import-data/data-type-selector/data-type-selector';
 import { UploadProgress } from './component/upload-progress/upload-progress';
-import { DataPreviewTable } from './component/data-preview-table/data-preview-table';
+import { DataPreviewTable } from './component/import-data/data-preview-table/data-preview-table';
 import { UploadSuccess } from './component/upload-success/upload-success';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { OcrSuccess } from './component/import-data/ocr-success/ocr-success';
 import { UploadService } from '../../shared/services/upload.service';
-import { ColumnMapping } from '../../shared/model/upload.model';
 import { ColumnMappingComponent } from './component/column-mapping/column-mapping';
 import * as XLSX from 'xlsx';
-
+import { DocumentTypeSelector } from './component/import-document/document-type-selector/document-type-selector';
+import { DocumentValidation } from './component/import-document/document-validation/document-validation';
+import { ValidationResult } from '../../shared/model/documentation-validation';
 
 @Component({
   selector: 'app-upload-center',
@@ -98,195 +26,176 @@ import * as XLSX from 'xlsx';
     DataPreviewTable,
     UploadProgress,
     UploadSuccess,
-    ColumnMappingComponent
+    ColumnMappingComponent,
+    OcrSuccess,
+    DocumentTypeSelector,
+    DocumentValidation,
   ],
- templateUrl: './upload-center.html',
+  templateUrl: './upload-center.html',
 })
 export class UploadCenterComponent {
-   private uploadService = inject(UploadService);
-  // State Management
+  private router = inject(Router);
+
+  // Global State
   activeTab = signal<'data' | 'document'>('data');
-  uploadStep = signal<'initial' | 'preview' | 'processing' | 'success'>('initial');
-  uploadedFile = signal<File | null>(null);
-  isAnalyzing = signal(false);
 
+  // Data Tab State
   selectedDataType = signal<string>('');
-  progress = signal(0);
-
-  // Excel data
+  uploadedFile = signal<File | null>(null);
   previewData = signal<any[]>([]);
   previewColumns = signal<string[]>([]);
   totalRows = signal<number>(0);
+  progress = signal(0);
+  validationResult = signal<ValidationResult | null>(null);
+  private uploadService = inject(UploadService);
+  selectedDocType = signal<string>('');
+  uploadStep = signal<'initial' | 'preview' | 'processing' | 'success'>('initial');
 
 
-  private router = inject(Router);
+  // document Tab state
+  ocrStep = signal<'initial' | 'validating' | 'validated' | 'processing' | 'success'>('initial');
 
-  // Flow State: 'initial' -> 'preview' -> 'processing' -> 'success'
 
-  // Data
-
-    // 1. Fetch Doc Types from Backend (Signal)
-  docTypes = toSignal(this.uploadService.getDocumentTypes(), { initialValue: [] });
-  selectedDocType = signal<string>('cni');
-
-  // 1. User Selects Type (Step 1)
-  onTypeSelected(type: string) {
-    this.selectedDataType.set(type);
-  }
-
-  // 2. User Drops File (Move to Step 2)
-  // onFileSelected(file: File) {
-  //   if (this.selectedDataType()) {
-  //     this.uploadStep.set('preview');
-  //   } else {
-  //     alert('Please select a data type first!');
-  //   }
-  // }
-
-  // // 3. User Clicks Run Analysis (Move to Step 3 -> 4)
-  // runAnalysis() {
-  //   this.uploadStep.set('processing');
-  //   this.progress.set(0);
-
-  //   // Simulate Backend Process
-  //   const interval = setInterval(() => {
-  //     this.progress.update(p => p + 10);
-  //     if (this.progress() >= 100) {
-  //       clearInterval(interval);
-  //       setTimeout(() => {
-  //         this.uploadStep.set('success');
-  //       }, 500);
-  //     }
-  //   }, 300);
-  // }
-
-  // Reset Flow
-  // reset() {
-  //   this.uploadStep.set('select');
-  //   this.selectedDataType.set(null);
-  //   this.progress.set(0);
-  // }
-
-  // viewReport() {
-  //   // navigate to analysis results
-  //   console.log('Navigating to results...');
-  // }
-
-    // 2. Store Mappings from Backend - Initialize with sample data
-  columnMappings = signal<ColumnMapping[]>([
-    { sourceColumn: 'NOM_COMPLET', targetField: 'full_name', confidence: 'auto' },
-    { sourceColumn: 'NIF', targetField: 'id_number', confidence: 'auto' },
-    { sourceColumn: 'DATE_NAISSANCE', targetField: 'date_of_birth', confidence: 'auto' },
-    { sourceColumn: 'MONTANT', targetField: 'payment_amount', confidence: 'manual' }
-  ]);
-
-    // File requirements
-  fileRequirements = [
-    'First row must contain column headers',
-    'Required fields: full_name, id_number, payment_amount',
-    'Date format: YYYY-MM-DD or DD/MM/YYYY',
-    'UTF-8 encoding recommended for special characters'
-  ];
-
-    setTab(tab: 'data' | 'document') {
-    this.activeTab.set(tab);
-    this.uploadedFile.set(null);
-    this.columnMappings.set([]); // Reset mappings on tab switch
-  }
-
-    // Handle File Selection
-  handleFile(file: File) {
+  onFileSelected(file: File) {
     this.uploadedFile.set(file);
 
-    // If we are on the Data tab, fetch mappings immediately
     if (this.activeTab() === 'data') {
-      this.isAnalyzing.set(true);
-      this.uploadService.analyzeFileColumns(file).subscribe({
-        next: (mappings) => {
-          this.columnMappings.set(mappings);
-          this.isAnalyzing.set(false);
-        },
-        error: (err) => {
-          console.error(err);
-          this.isAnalyzing.set(false);
-        }
-      });
+      // The parser handles setting the 'preview' step after data is ready.
+      this.parseExcelFile(file);
+    } else {
+      // OCR Logic
+      if (this.selectedDocType()) {
+        this.runValidation(file, this.selectedDocType());
+      }
     }
   }
 
-
-
-  /////////
-
-
-
-
-
-
-
-  // 1. Handle File Selection (Moves from Initial -> Preview)
-  onFileSelected(file: File) {
-    this.parseExcelFile(file);
-    this.uploadStep.set('preview');
-  }
-
-  // Parse Excel/CSV file
   private parseExcelFile(file: File) {
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result;
-      const workbook = XLSX.read(data, { type: 'binary' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-      if (jsonData.length > 0) {
-        const headers = jsonData[0] as string[];
-        this.previewColumns.set(headers);
+    reader.onload = (e: any) => {
+      try {
+        const bstr = e.target.result;
+        const wb = XLSX.read(bstr, { type: 'binary' });
+        const wsname = wb.SheetNames[0];
+        const ws = wb.Sheets[wsname];
 
-        // Convert rows to objects (show first 5 for preview)
-        const dataRows = (jsonData.slice(1, 6) as any[][]).map((row: any[]) => {
-          const rowObj: any = {};
-          headers.forEach((header, index) => {
-            rowObj[header] = row[index] || '';
+        const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as any[][];
+
+        if (data && data.length > 0) {
+          this.previewColumns.set(data[0]);
+
+          const rows = data.slice(1, 6).map((row) => {
+            let obj: any = {};
+            data[0].forEach((key: string, i: number) => {
+              obj[key] = row[i];
+            });
+            return obj;
           });
-          return rowObj;
-        });
 
-        this.previewData.set(dataRows);
-        this.totalRows.set(jsonData.length - 1);
+          this.previewData.set(rows);
+          this.totalRows.set(data.length - 1);
+
+          this.uploadStep.set('preview');
+        }
+      } catch (error) {
+        console.error('Error parsing file:', error);
+        alert('Failed to parse file. Please check format.');
       }
     };
+
     reader.readAsBinaryString(file);
   }
 
-  // 2. Run Analysis (Moves from Preview -> Processing -> Success)
-  runAnalysis() {
+  runDataAnalysis() {
+    console.log(`Running analysis for type: ${this.selectedDataType()}`);
+
     this.uploadStep.set('processing');
     this.progress.set(0);
 
-    // Simulate backend processing with the blue bar
     const interval = setInterval(() => {
       this.progress.update(p => p + 5);
       if (this.progress() >= 100) {
         clearInterval(interval);
-        // Add a small delay at 100% before showing success
         setTimeout(() => {
           this.uploadStep.set('success');
         }, 600);
       }
-    }, 150); // Speed of simulation
+    }, 150);
+  }
+  // --- DOCUMENT OCR LOGIC ---
+  handleDocumentUpload(file: File) {
+    this.ocrStep.set('validating');
+    // Simulate validation delay
+    setTimeout(() => {
+      this.ocrStep.set('validated');
+    }, 1500);
   }
 
-  // 3. Navigation
-  viewReport() {
-    this.router.navigate(['/fraud']); // Navigates to your "Analysis Results" page
+  onDocTypeSelected(typeId: string) {
+    this.selectedDocType.set(typeId);
+    const file = this.uploadedFile();
+    if (file) {
+      this.runValidation(file, typeId);
+    }
   }
 
+  private runValidation(file: File, typeId: string) {
+    this.validationResult.set({ status: 'validating' });
+
+    this.uploadService.validateDocument(file, typeId).subscribe({
+      next: (result) => {
+        this.validationResult.set(result);
+      },
+      error: (err) => {
+        console.error('Validation failed', err);
+        this.validationResult.set({ status: 'mismatch', confidence: 0 });
+      },
+    });
+  }
+
+  runDocumentAnalysis() {
+    this.ocrStep.set('processing');
+    this.progress.set(0);
+
+    const interval = setInterval(() => {
+      this.progress.update((p) => p + 5);
+      if (this.progress() >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          this.ocrStep.set('success');
+        }, 600);
+      }
+    }, 100);
+  }
+
+  analysisButtonLabel = computed(() => {
+    const type = this.selectedDataType();
+    switch (type) {
+      case 'payment': return 'Run Payment Analysis';
+      case 'financial': return 'Run Financial Analysis';
+      case 'identity': return 'Run Identity Analysis';
+      case 'compliance': return 'Run Compliance Analysis';
+      default: return 'Run Analysis';
+    }
+  });
+
+  // --- SHARED UTILS ---
   reset() {
     this.uploadStep.set('initial');
+    this.ocrStep.set('initial');
+    this.uploadedFile.set(null);
+    this.validationResult.set(null);
     this.progress.set(0);
+    this.previewData.set([]);
   }
 
+  viewReport() {
+    this.router.navigate(['/fraud']);
+  }
 
+  setTab(tab: 'data' | 'document') {
+    this.activeTab.set(tab);
+    this.reset();
+  }
 }
