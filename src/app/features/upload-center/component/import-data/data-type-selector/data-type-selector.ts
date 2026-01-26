@@ -24,7 +24,7 @@ export class DataTypeSelector {
   }
 
   types = [
-    { id: 'payment', title: 'Payment Records', desc: 'Detect overpayments, ghost workers, and duplicate payments', icon: '💰' },
+    { id: 'payment', title: 'Payment Records', desc: 'Detect overpayments, ghost workers, and duplicate payments', icon: '💰' },  // TODO REMOVE THIS AND UPDATE
     { id: 'financial', title: 'Financial Data', desc: 'Budget vs actual analysis and financial anomaly detection', icon: '📊' },
     { id: 'identity', title: 'Identity Records', desc: 'Duplicate identity detection and verification', icon: '🪪' },
     { id: 'compliance', title: 'Compliance/Process', desc: 'Procedure deviation and compliance analysis', icon: '🔬' }

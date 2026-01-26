@@ -25,7 +25,7 @@ export class DocumentTypeSelector {
 
   docTypes = [
     { id: 'cni', label: 'National ID Card (CNI)', icon: '🪪' },
-    { id: 'passport', label: 'Passport', icon: '📘' },
+    { id: 'passport', label: 'Passport', icon: '📘' }, // TODO REMOVE THIS AND UPDATE
     { id: 'license', label: "Driver's License", icon: '🚗' },
     { id: 'birth', label: 'Birth Certificate', icon: '📄' },
     { id: 'statement', label: 'Bank Statement', icon: '🏦' },

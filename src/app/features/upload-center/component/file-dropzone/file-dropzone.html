@@ -1,68 +1,38 @@
-<!-- <div
-  class="border-2 border-dashed rounded-xl h-64 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer group"
-  [class.border-brand-blue]="isDragging()"
+<div
+  class="border-2 border-dashed rounded-xl h-60 flex flex-col items-center justify-center transition-all duration-200 group bg-white"
+  [class.border-[#1F3A7D]]="isDragging()"
   [class.bg-blue-50]="isDragging()"
   [class.border-gray-300]="!isDragging()"
-  [class.bg-gray-50]="!isDragging()"
+  [class.opacity-50]="disabled()"
+  [class.cursor-not-allowed]="disabled()"
   (dragover)="onDragOver($event)"
   (dragleave)="onDragLeave($event)"
   (drop)="onDrop($event)"
-  (click)="fileInput.click()"
+  (click)="!disabled() && triggerFileInput()"
 >
-  <div class="mb-4 p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform">
-    <lucide-icon name="upload-cloud" class="w-8 h-8 text-[#1F3A7D]"></lucide-icon>
+  <div class="mb-3 p-3 bg-gray-50 rounded-full group-hover:scale-110 transition-transform">
+    <lucide-icon name="upload" class="w-8 h-8 text-gray-400"></lucide-icon>
   </div>
 
-  <h3 class="text-lg font-medium text-gray-900 mb-1">Drag and drop your file here</h3>
-  <p class="text-sm text-gray-500 mb-4">or click to browse</p>
+  <h3 class="text-base font-semibold text-gray-900 mb-1">Drag and drop your file here</h3>
+  <p class="text-xs text-gray-500 mb-4">or click to browse</p>
 
   <button
-    class="px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] transition-colors text-sm font-medium"
+    type="button"
+    (click)="$event.stopPropagation(); triggerFileInput()"
+    [disabled]="disabled()"
+    class="px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] transition-colors text-xs font-bold uppercase tracking-wide disabled:bg-gray-400"
   >
     Select File
   </button>
 
-  <p class="mt-4 text-xs text-gray-400">
-    {{ supportedFormats() }}
-  </p>
+  <p class="mt-4 text-[10px] text-gray-400">{{ supportedFormats() }}</p>
 
-  <input type="file" #fileInput class="hidden" (change)="onFileSelected($event)" />
-</div> -->
-
-<div
-      class="border-2 border-dashed rounded-xl h-60 flex flex-col items-center justify-center transition-all duration-200 group bg-white"
-      [class.border-[#1F3A7D]]="isDragging()"
-      [class.bg-blue-50]="isDragging()"
-      [class.border-gray-300]="!isDragging()"
-      [class.opacity-50]="disabled()"
-      [class.cursor-not-allowed]="disabled()"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
-      (click)="!disabled() && triggerFileInput()">
-
-      <div class="mb-3 p-3 bg-gray-50 rounded-full group-hover:scale-110 transition-transform">
-        <lucide-icon name="upload" class="w-8 h-8 text-gray-400"></lucide-icon>
-      </div>
-
-      <h3 class="text-base font-semibold text-gray-900 mb-1">Drag and drop your file here</h3>
-      <p class="text-xs text-gray-500 mb-4">or click to browse</p>
-
-      <button
-        type="button"
-        (click)="$event.stopPropagation(); triggerFileInput()"
-        [disabled]="disabled()"
-        class="px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] transition-colors text-xs font-bold uppercase tracking-wide disabled:bg-gray-400">
-        Select File
-      </button>
-
-      <p class="mt-4 text-[10px] text-gray-400">{{ supportedFormats() }}</p>
-
-      <input
-        type="file"
-        #fileInput
-        class="hidden"
-        (change)="onFileSelected($event)"
-        [accept]="accept()"
-      />
-    </div>
+  <input
+    type="file"
+    #fileInput
+    class="hidden"
+    (change)="onFileSelected($event)"
+    [accept]="accept()"
+  />
+</div>
