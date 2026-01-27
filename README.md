@@ -146,7 +146,6 @@ interface FraudCase {
   fraudScore: number;
   status: string;
   anomalies: Anomaly[];
-  // Type-specific data...
 }
 ```
 
