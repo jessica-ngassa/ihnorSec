@@ -277,101 +277,91 @@ import { FraudCase } from '../../shared/model/fraud-case.model';
 export class FraudService {
 
   private MOCK_DATA: FraudCase[] = [
-    // --- CASE 1: IDENTITY DESIGN MATCH ---
     {
       id: 1,
       recordType: 'identity',
-      name: 'Jessica Ngassa',
-      idNumber: 'CMR09284759',
-      documentImage: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600',
-      fraudScore: 87,
-      status: 'High Risk',
+      name: 'Jean Baptiste Kouame',
+      idNumber: 'CI-2345678',
+      fraudScore: 94,
+      status: 'Unassigned',
       documentMatched: false,
       systemData: {
-        name: 'Jessica Ngassa',
-        idNumber: 'CMR09284759',
-        dateOfBirth: '18/05/1996',
-        region: 'Yaoundé - Civil Servant'
-      },
-      ocrData: {
-        name: "N'Gassa Jessica",
-        dob: "18/05/1996",
-        idNumber: "CMR09284759",
-        issueDate: "12/01/2020",
-        expiryDate: "12/01/2030",
-        address: "Yaoundé, Centre Region",
-        confidence: 94.5
+        region: 'Payroll Division',
+        name: 'Jean Baptiste', idNumber: 'CI-2345678', dateOfBirth: ''
       },
       anomalies: [
-        { id: '1', title: 'Mismatch between document and system name', description: 'Name Mismatch', severity: 'High' },
-        { id: '2', title: 'Document used by multiple users', description: 'Duplicate Document', severity: 'High' },
-        { id: '3', title: 'Critical field missing in system', description: 'Address Missing', severity: 'Medium' },
-        { id: '4', title: 'Similar ID numbers in cluster', description: 'Suspicious Pattern', severity: 'Low' }
+        { id: '1', title: 'Duplicate Payment', severity: 'High', description: 'Multiple payroll entries' }
       ]
     },
-
-    // --- CASE 2: PAYMENT DESIGN MATCH ---
+    {
+      id: 2,
+      recordType: 'identity',
+      name: 'Aminata Traoré',
+      idNumber: 'CI-8765432',
+      fraudScore: 88,
+      status: 'Under Investigation',
+      documentMatched: false,
+      systemData: {
+        region: 'Social Security',
+        name: 'Aminata Traoré', idNumber: 'CI-8765432', dateOfBirth: ''
+      },
+      assignedTo: 'Marie Diop',
+      anomalies: [
+        { id: '2', title: 'Ghost Beneficiary', severity: 'High', description: 'Non-existent ID' }
+      ]
+    },
     {
       id: 3,
       recordType: 'payment',
-      name: 'Thomas Nkwenti',
-      idNumber: 'CMR07835421',
-      fraudScore: 92,
-      status: 'High Risk',
+      name: 'Ibrahim Sanogo',
+      idNumber: 'CI-5544332',
+      fraudScore: 76,
+      status: 'Under Investigation',
       documentMatched: true,
       paymentData: {
-        reference: 'RD-MAINT-2024-Q2-087',
-        transactionId: 'PAY-2024-00847',
-        paymentDate: '15/04/2024',
-        department: 'Ministry of Public Works',
-        paymentType: 'Road Maintenance Contract',
-        approvedBy: 'Director Mballa J.',
-        paymentMethod: 'Bank Transfer',
-        recipientName: 'Thomas Nkwenti',
-        previousPayments: 2,
-        expectedAmount: 2750000,
-        actualAmount: 8640000,
-        variance: 5890000,
-        variancePercentage: 214.2,
-        averagePayment: 2650000
+        department: 'Health Claims',
+        transactionId: '', paymentDate: '', paymentType: '', approvedBy: '', recipientName: '',
+        expectedAmount: 0, actualAmount: 0, variance: 0, variancePercentage: 0, paymentMethod: '', reference: '',
+        previousPayments: 0
       },
+      assignedTo: 'Marie Diop',
       anomalies: [
-        { id: '1', title: 'Payment 215% above expected amount', description: 'Massive Overpayment', severity: 'High' },
-        { id: '2', title: 'Multiple payments for same project', description: 'Duplicate Payment', severity: 'High' },
-        { id: '3', title: 'Missing secondary approval', description: 'Approval Chain Bypass', severity: 'Medium' }
+        { id: '3', title: 'Duplicate Identity', severity: 'Medium', description: 'Multiple claims' }
       ]
     },
-
-    // --- CASE 3: COMPLIANCE DESIGN MATCH ---
     {
-      id: 9,
+      id: 4,
+      recordType: 'payment',
+      name: 'Kouassi Brigitte',
+      idNumber: 'CI-9876543',
+      fraudScore: 92,
+      status: 'Unassigned',
+      documentMatched: false,
+      paymentData: {
+        department: 'Procurement',
+        transactionId: '', paymentDate: '', paymentType: '', approvedBy: '', recipientName: '',
+        expectedAmount: 0, actualAmount: 0, variance: 0, variancePercentage: 0, paymentMethod: '', reference: '',
+        previousPayments: 0
+      },
+      anomalies: [
+        { id: '4', title: 'Document Forgery', severity: 'High', description: 'Altered invoice' }
+      ]
+    },
+    {
+      id: 5,
       recordType: 'compliance',
       name: 'Restaurant Le Gourmet',
       idNumber: 'FOOD-2024-001',
       fraudScore: 88,
-      status: 'High Risk',
+      status: 'Unassigned',
       documentMatched: true,
       complianceData: {
-        recordId: 'COMP-FOOD-20240510',
-        date: '10/05/2024',
-        location: 'Restaurant Le Gourmet - Douala',
         industry: 'Food Service',
-        processStep: 'Food Storage & Refrigeration',
-        performedBy: 'Night Shift Staff',
-        deviationType: 'Temperature + Skipped Monitoring',
-        impact: '15 customers reported food poisoning symptoms',
-        expectedProcedure: 'Store seafood at 4°C, check temperature hourly',
-        actualProcedure: 'Stored at 12°C, no temperature checks for 8 hours',
-        expectedMeasurement: '4°C',
-        measurement: '12°C'
-      },
-      ocrData: {
-        name: 'Le Gourmet', dob: '', idNumber: '', issueDate: '', expiryDate: '', address: '', confidence: 85.0
+        recordId: '', date: '', location: '', processStep: '', performedBy: '', deviationType: '',
+        impact: '', expectedProcedure: '', actualProcedure: '', expectedMeasurement: '', measurement: ''
       },
       anomalies: [
-        { id: '1', title: 'Food stored at dangerous temperature', description: 'Critical Temperature Violation', severity: 'High' },
-        { id: '2', title: 'Temperature checks not performed', description: 'Procedure Skipped', severity: 'High' },
-        { id: '3', title: 'Unqualified staff handling food', description: 'Personnel Violation', severity: 'Medium' }
+        { id: '5', title: 'Health Violation', severity: 'High', description: 'Critical temp failure' }
       ]
     }
   ];

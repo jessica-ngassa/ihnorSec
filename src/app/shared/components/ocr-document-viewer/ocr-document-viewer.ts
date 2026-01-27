@@ -10,22 +10,6 @@ import { OcrResult } from '../../model/ocr-data.interface';
   styleUrl: './ocr-document-viewer.scss',
 })
 export class OcrDocumentViewer {
-  // imageSrc = input.required<string>();
-  // data = input.required<OcrResult>();
-  // zoomLevel = 100;
-
-  // fields = [
-  //   { key: 'name', label: 'Name' },
-  //   { key: 'dob', label: 'Date of Birth' },
-  //   { key: 'idNumber', label: 'ID/Passport Number' },
-  //   { key: 'issueDate', label: 'Issue Date' },
-  //   { key: 'expiryDate', label: 'Expiry Date' },
-  //   { key: 'address', label: 'Address' }
-  // ];
-
-  // getFieldValue(key: string): any {
-  //   return (this.data() as any)[key];
-  // }
 
   imageSrc = input.required<string>();
   data = input.required<any>(); // Replace 'any' with OcrResult interface

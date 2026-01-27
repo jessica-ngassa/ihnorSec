@@ -1,7 +1,16 @@
- <div class="p-8 bg-gray-50/30 min-h-screen">
-  <div class="mb-8">
-    <h1 class="text-[#1F3A7D] text-2xl font-bold mb-2">Analysis Results</h1>
-    <p class="text-gray-500">Comprehensive analysis of uploaded documents and data files</p>
+<div class="p-8 bg-gray-50/30 min-h-screen">
+  <div class="mb-8 flex justify-between items-center">
+    <div>
+      <h1 class="text-[#1F3A7D] text-2xl font-bold mb-1">Case Management</h1>
+      <p class="text-gray-500 text-sm">{{ filteredData().length }} flagged cases requiring review</p>
+    </div>
+
+    <button
+      class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors text-sm font-medium shadow-sm"
+      (click)="exportToExcel()">
+      <lucide-icon name="download" class="flex w-4 h-4"></lucide-icon>
+      Export List
+    </button>
   </div>
 
   <div class="flex gap-4 mb-6">
@@ -16,7 +25,7 @@
     <button
       class="flex items-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
       (click)="isFilterVisible.set(!isFilterVisible())">
-      <lucide-icon name="sliders-horizontal" class="w-4 h-4"></lucide-icon>
+      <lucide-icon name="sliders-horizontal" class="flex w-4 h-4"></lucide-icon>
       Filters
     </button>
   </div>
@@ -30,11 +39,11 @@
     </div>
     }
 
-    <div class="flex-grow bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="flex-grow">
       <app-data-table
-        [columns]="fraudColumns"
         [data]="filteredData()"
-        (actionClicked)="handleAction($event)">
+        [columns]="tableColumns"
+        (actionClicked)="handleAction($event.row.id)">
       </app-data-table>
     </div>
   </div>

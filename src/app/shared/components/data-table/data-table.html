@@ -1,222 +1,101 @@
-<!--
-<nz-table
-  #basicTable
-  [nzData]="data()"
-  [nzFrontPagination]="true"
-  [nzPageSize]="10"
-  class="custom-table"
->
-  <thead class="bg-gray-50/50">
-    <tr>
-      @for (col of columns(); track col.key) {
-      <th [nzAlign]="col.align || 'left'" class="!bg-transparent !border-b !border-gray-100 !text-gray-500 !font-medium !text-xs !uppercase !tracking-wider !py-4">
-        {{ col.label }}
-      </th>
-      }
-    </tr>
-  </thead>
-  <tbody>
-    @for (row of basicTable.data; track row.id) {
-    <tr class="hover:bg-blue-50/30 transition-colors group">
-      @for (col of columns(); track col.key) {
-      <td [nzAlign]="col.align || 'left'" class="!py-4 !border-gray-50 text-sm">
-
-        @switch (col.type) {
-
-          @case ('profile-icon') {
-            <div class="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                 [ngClass]="row.recordType === 'payment' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'">
-              @if (row.recordType === 'payment') {
-                <lucide-icon name="dollar-sign" class="w-5 h-5"></lucide-icon>
-              } @else {
-                <lucide-icon name="user" class="w-5 h-5"></lucide-icon>
-              }
-            </div>
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-left text-sm">
+      <thead class="bg-white text-gray-500 border-b border-gray-100 text-[11px] font-semibold uppercase tracking-wider">
+        <tr>
+          @for (col of columns(); track col.key) {
+            <th class="px-6 py-5" [class]="col.width || ''" [style.text-align]="col.align || 'left'">
+              {{ col.label }}
+            </th>
           }
+        </tr>
+      </thead>
 
-          @case ('double-text') {
-            <div>
-              <p class="font-medium text-gray-900 m-0">{{ row[col.key] }}</p>
-              @if (col.subKey && row[col.subKey]) {
-                <p class="text-xs text-gray-500 m-0 mt-0.5">{{ row[col.subKey] }}</p>
-              }
-            </div>
-          }
-
-          @case ('details') {
-            @if (row.recordType === 'payment' && row.paymentData) {
-              <div class="text-xs space-y-0.5">
-                <p class="text-gray-500 m-0">
-                  Exp: {{ row.paymentData.expectedAmount | currency:'XAF':'symbol':'1.0-0' }}
-                </p>
-                <div class="flex items-center gap-1">
-                  <span [class]="row.paymentData.variance > 0 ? 'text-red-600 font-medium' : 'text-green-600 font-medium'">
-                    Act: {{ row.paymentData.actualAmount | currency:'XAF':'symbol':'1.0-0' }}
-                  </span>
-                  @if (row.paymentData.variance > 0) {
-                    <span class="text-[10px] bg-red-50 text-red-600 px-1 rounded">
-                      +{{ row.paymentData.variancePercentage }}%
-                    </span>
-                  }
-                </div>
+      <tbody class="divide-y divide-gray-100">
+        @for (row of data(); track row.id) {
+          <tr class="hover:bg-gray-50 transition-colors group">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                <span class="font-bold text-[#1F3A7D] text-xs">
+                  {{ formatCaseId(row.id) }}
+                </span>
               </div>
-            } @else {
-              <div class="text-sm text-gray-600">
-                 {{ row.region }} <span class="text-gray-300 mx-1">•</span> {{ row.role }}
-               </div>
-            }
-          }
+            </td>
 
-          @case ('score') {
-            <span class="font-bold text-base" [ngClass]="getScoreColor(row[col.key])">
-              {{ row[col.key] }}
-            </span>
-          }
-
-          @case ('anomalies') {
-            <div class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-700 font-semibold text-xs border border-red-100">
-              {{ row[col.key] }}
-            </div>
-          }
-
-          @case ('status') {
-            <nz-tag [nzColor]="getStatusColor(row[col.key])" class="border-0 rounded-md px-2.5 py-0.5 font-medium text-xs">
-              {{ row[col.key] }}
-            </nz-tag>
-          }
-
-          @case ('action') {
-            <button
-              class="text-brand-blue hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-2 transition-all text-xs font-medium"
-              (click)="actionClicked.emit({ type: 'view', row: row })"
-            >
-              <lucide-icon name="eye" class="w-3.5 h-3.5"></lucide-icon>
-              View Details
-            </button>
-          }
-
-          @default {
-            <span class="text-gray-600">{{ row[col.key] }}</span>
-          }
-        }
-      </td>
-      }
-    </tr>
-    }
-  </tbody>
-</nz-table> -->
-
-
-<nz-table
-  #basicTable
-  [nzData]="data()"
-  [nzFrontPagination]="true"
-  [nzPageSize]="10"
-  class="custom-table"
->
-  <thead class="bg-gray-50/50">
-    <tr>
-      @for (col of columns(); track col.key) {
-      <th [nzAlign]="col.align || 'left'" class="!bg-transparent !border-b !border-gray-100 !text-gray-500 !font-medium !text-xs !uppercase !tracking-wider !py-4">
-        {{ col.label }}
-      </th>
-      }
-    </tr>
-  </thead>
-  <tbody>
-    @for (row of basicTable.data; track row.id) {
-    <tr class="hover:bg-blue-50/30 transition-colors group">
-      @for (col of columns(); track col.key) {
-      <td [nzAlign]="col.align || 'left'" class="!py-4 !border-gray-50 text-sm align-middle">
-
-        @switch (col.type) {
-
-          @case ('profile-icon') {
-            <div class="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-                 [ngClass]="row.recordType === 'payment' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'">
-              @if (row.recordType === 'payment') {
-                <lucide-icon name="dollar-sign" class="w-5 h-5"></lucide-icon>
-              } @else {
-                <lucide-icon name="user" class="w-5 h-5"></lucide-icon>
-              }
-            </div>
-          }
-
-          @case ('double-text') {
-            <div>
-              <p class="font-medium text-gray-900 m-0 leading-tight">{{ row[col.key] }}</p>
-
-              @if (col.key === 'name' && row.recordType === 'payment') {
-                 <p class="text-xs text-gray-400 m-0 mt-1">{{ row.paymentData?.paymentType }}</p>
-              } @else if (col.subKey && row[col.subKey]) {
-                 <p class="text-xs text-gray-400 m-0 mt-1">{{ row[col.subKey] }}</p>
-              } @else if (col.key === 'idNumber' && row.recordType === 'payment') {
-                 <p class="text-xs text-gray-400 m-0 mt-1">{{ row.paymentData?.reference }}</p>
-              }
-            </div>
-          }
-
-          @case ('details') {
-            @if (row.recordType === 'payment' && row.paymentData) {
-              <div class="text-xs space-y-1">
-                <p class="text-gray-500 m-0">
-                  Exp: {{ row.paymentData.expectedAmount | currency:'XAF':'symbol':'1.0-0' }}
-                </p>
-                <div class="flex items-center gap-2">
-                  <span class="font-medium" [class]="row.paymentData.variance > 0 ? 'text-red-600' : 'text-green-600'">
-                    Act: {{ row.paymentData.actualAmount | currency:'XAF':'symbol':'1.0-0' }}
-                  </span>
-                  @if (row.paymentData.variance > 0) {
-                    <span class="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">
-                      +{{ row.paymentData.variancePercentage }}%
-                    </span>
-                  }
-                </div>
+            <td class="px-6 py-4">
+              <div class="flex flex-col">
+                <span class="font-semibold text-gray-900">{{ row.name }}</span>
+                <span class="text-xs text-gray-400 mt-0.5">{{ row.idNumber }}</span>
               </div>
-            } @else {
-              <div class="text-sm text-gray-600">
-                 {{ row.systemData?.region || 'N/A' }}
-               </div>
-            }
-          }
+            </td>
 
-          @case ('score') {
-            <span class="font-bold text-base block" [ngClass]="getScoreColor(row[col.key])">
-              {{ row[col.key] }}
-            </span>
-          }
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-gray-900 text-base">{{ row.fraudScore }}</span>
+                <span class="text-[10px] px-2 py-0.5 rounded border font-medium uppercase"
+                      [class]="getRiskBadgeColor(row.fraudScore)">
+                  {{ getRiskLabel(row.fraudScore) }}
+                </span>
+              </div>
+            </td>
 
-          @case ('anomalies') {
-            <div class="inline-flex items-center justify-center w-8 h-8 rounded-full font-semibold text-xs border transition-all"
-                 [ngClass]="(row[col.key]?.length || 0) > 0 ? 'bg-red-50 text-red-700 border-red-100' : 'bg-green-50 text-green-700 border-green-100'">
-              {{ row[col.key]?.length || 0 }}
-            </div>
-          }
+            <td class="px-6 py-4">
+              <span class="inline-block bg-red-50 text-red-700 text-xs px-3 py-1.5 rounded-md font-medium border border-red-100">
+                {{ row.anomalies[0]?.title || 'Anomaly' }}
+              </span>
+            </td>
 
-          @case ('status') {
-             <div class="inline-block px-2.5 py-1 rounded border text-xs font-medium"
-                 [ngClass]="getStatusColor(row[col.key])">
-                {{ row[col.key] }}
-             </div>
-          }
+            <td class="px-6 py-4">
+              <span class="text-gray-600 font-medium">{{ getUnit(row) }}</span>
+            </td>
 
-          @case ('action') {
-            <button
-              class="text-brand-blue hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-xs font-medium ml-auto"
-              (click)="actionClicked.emit({ type: 'view', row: row })"
-            >
-              <lucide-icon name="eye" class="w-3.5 h-3.5"></lucide-icon>
-              View Details
-            </button>
-          }
+            <td class="px-6 py-4">
+              @if (row.assignedTo) {
+                <div class="flex flex-col">
+                  <span class="text-gray-900 font-medium">{{ row.assignedTo }}</span>
+                </div>
+              } @else {
+                <button class="flex items-center gap-1 text-gray-400 hover:text-[#1F3A7D] text-xs font-medium transition-colors">
+                  Assign
+                </button>
+              }
+            </td>
 
-          @default {
-            <span class="text-gray-600">{{ row[col.key] }}</span>
-          }
+            <td class="px-6 py-4">
+              <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border"
+                   [class]="getStatusColor(row.status)">
+                {{ row.status }}
+              </div>
+            </td>
+
+            <td class="px-6 py-4 text-center">
+              <button
+                (click)="actionClicked.emit({ type: 'view', row: row })"
+                class="text-[#1F3A7D] hover:bg-blue-50 p-2 rounded-full transition-colors">
+                <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
+              </button>
+            </td>
+          </tr>
         }
-      </td>
-      }
-    </tr>
-    }
-  </tbody>
-</nz-table>
+
+        @if (data().length === 0) {
+          <tr>
+            <td [attr.colspan]="columns().length" class="px-6 py-12 text-center text-gray-500">
+              <p>No cases found matching your search.</p>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+    <span>Showing 1-{{ data().length }} of {{ data().length }} cases</span>
+    <div class="flex gap-1">
+      <button class="px-3 py-1 border rounded hover:bg-gray-50">Previous</button>
+      <button class="px-3 py-1 bg-[#1F3A7D] text-white rounded">1</button>
+      <button class="px-3 py-1 border rounded hover:bg-gray-50">Next</button>
+    </div>
+  </div>
+</div>

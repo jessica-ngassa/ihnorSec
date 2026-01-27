@@ -14,7 +14,7 @@
         [class.text-[#1F3A7D]]="activeTab() === 'data'"
         [class.text-gray-500]="activeTab() !== 'data'"
       >
-        <lucide-icon name="file-spreadsheet" class="w-4 h-4"></lucide-icon> <span>{{ translationService.translate('upload.tab.data') }}</span>
+        <lucide-icon name="file-spreadsheet" class="flex w-4 h-4"></lucide-icon> <span>{{ translationService.translate('upload.tab.data') }}</span>
         <div
           *ngIf="activeTab() === 'data'"
           class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"
@@ -27,7 +27,7 @@
         [class.text-[#1F3A7D]]="activeTab() === 'document'"
         [class.text-gray-500]="activeTab() !== 'document'"
       >
-        <lucide-icon name="file-image" class="w-4 h-4"></lucide-icon> <span>{{ translationService.translate('upload.tab.document') }}</span>
+        <lucide-icon name="file-image" class="flex w-4 h-4"></lucide-icon> <span>{{ translationService.translate('upload.tab.document') }}</span>
         <div
           *ngIf="activeTab() === 'document'"
           class="absolute bottom-0 left-0 w-full h-0.5 bg-[#1F3A7D]"

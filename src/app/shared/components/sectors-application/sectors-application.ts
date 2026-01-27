@@ -11,7 +11,7 @@ import { SectorData } from '../../model/dashboard.interface';
 })
 export class SectorsApplication {
   sectors: SectorData[] = [
-    { id: '1', name: 'Sécurité Sociale', count: 2347, icon: '🏥', color: 'blue' },
+    { id: '1', name: 'Sécurité Sociale', count: 2347, icon: '🏥', color: 'blue' }, // TODO TO REMOVE
     { id: '2', name: 'Fonction Publique', count: 3891, icon: '🏛️', color: 'purple' },
     { id: '3', name: 'Finances Publiques', count: 1892, icon: '💰', color: 'green' },
     { id: '4', name: 'Assurances Santé', count: 1456, icon: '⚕️', color: 'red' },
