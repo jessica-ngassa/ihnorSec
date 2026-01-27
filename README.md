@@ -9,6 +9,9 @@ A comprehensive Angular-based fraud detection and analysis system for identifyin
 - **Real-time Dashboard**: Live fraud statistics and risk assessment metrics
 - **Comparison Tables**: Side-by-side data validation between systems and documents
 - **Anomaly Detection**: Automated identification of suspicious patterns and discrepancies
+- **Configuration Management**: Modular system configuration and detection rules setup
+- **Multi-tenant Support**: Platform administration for multiple organizations
+- **Internationalization**: Runtime language switching (English/French)
 - **Responsive Design**: Modern UI with Tailwind CSS and Lucide icons
 
 ## Tech Stack
@@ -53,9 +56,19 @@ A comprehensive Angular-based fraud detection and analysis system for identifyin
 src/app/
 ├── features/
 │   ├── dashboard/           # Main analytics dashboard
+│   ├── upload-center/       # File upload functionality
 │   ├── fraud-cases/         # Fraud case management
 │   │   ├── fraud/          # Case listing
 │   │   └── fraud-detail/   # Detailed case analysis
+│   ├── document/           # OCR document review
+│   ├── reports/            # Reports & audit functionality
+│   ├── config/             # Configuration management
+│   │   ├── modules/        # Module configuration
+│   │   ├── detection-rules/ # Detection rules setup
+│   │   ├── data-mapping/   # Data mapping configuration
+│   │   └── agency-settings/ # Agency-specific settings
+│   ├── admin/              # Platform administration
+│   │   └── multi-tenant/   # Multi-tenant configuration
 │   └── main-layout/        # Application shell
 ├── shared/
 │   ├── components/         # Reusable UI components
@@ -64,6 +77,7 @@ src/app/
 │   │   └── ocr-document-viewer/ # Document viewer
 │   ├── model/             # TypeScript interfaces
 │   └── services/          # Data services
+│       └── translation.service.ts # Runtime translation service
 └── core/                  # Core application logic
 ```
 
