@@ -1,4 +1,73 @@
- <div class="p-6">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-4">Detection Rules</h1>
-      <p class="text-gray-600">Detection rules configuration coming soon.</p>
+<nz-spin [nzSpinning]="loading()" nzTip="Loading rules...">
+  <div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3A7D] mb-2">Fraud Detection Rules Configuration</h1>
+        <p class="text-gray-600 text-base sm:text-lg">
+          Configure detection rules and thresholds for your organization
+        </p>
+      </div>
+
+      <!-- Overview -->
+      <div class="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+          <div class="text-center p-3 sm:p-4">
+            <p class="text-3xl sm:text-4xl font-bold mb-2 text-[#1F3A7D]">{{ rules().length }}</p>
+            <p class="text-xs sm:text-sm text-gray-600">Total Rules Available</p>
+          </div>
+          <div class="text-center p-3 sm:p-4">
+            <p class="text-3xl sm:text-4xl font-bold mb-2 text-green-600">{{ enabledCount }}</p>
+            <p class="text-xs sm:text-sm text-gray-600">Currently Enabled</p>
+          </div>
+          <div class="text-center p-3 sm:p-4">
+            <p class="text-3xl sm:text-4xl font-bold mb-2 text-[#1F3A7D]">{{ categories.length }}</p>
+            <p class="text-xs sm:text-sm text-gray-600">Rule Categories</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rules by Category -->
+      <div *ngFor="let category of categories" class="mb-6 sm:mb-8">
+        <h3 class="text-lg sm:text-xl font-semibold text-[#1F3A7D] mb-3 sm:mb-4">{{ category }} Rules</h3>
+        <div class="space-y-3 sm:space-y-4">
+          <app-rule-card
+            *ngFor="let rule of getCategoryRules(category)"
+            [rule]="rule"
+            (toggleRule)="toggleRule($event)"
+            (thresholdChange)="updateThreshold($event)">
+          </app-rule-card>
+        </div>
+      </div>
+
+      <!-- Architecture Note -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
+        <h3 class="text-base sm:text-lg font-semibold text-[#1F3A7D] mb-3 flex items-center gap-2">
+          <lucide-angular name="settings" class="w-4 h-4 sm:w-5 sm:h-5"></lucide-angular>
+          Configuration Architecture
+        </h3>
+        <p class="text-gray-700 text-xs sm:text-sm mb-3 sm:mb-4">
+          Rules are stored as configuration, not code. This allows:
+        </p>
+        <ul class="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600">
+          <li class="flex items-start gap-2">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
+            <span><strong>Per-tenant customization:</strong> Each agency defines their own thresholds</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
+            <span><strong>Dynamic updates:</strong> Rules can be adjusted without redeployment</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
+            <span><strong>Sector optimization:</strong> Pre-configured presets for different use cases</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 sm:mt-2 flex-shrink-0"></div>
+            <span><strong>No code changes:</strong> Same detection engine adapts to all configurations</span>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
+</nz-spin>

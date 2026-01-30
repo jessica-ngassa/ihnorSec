@@ -1,0 +1,102 @@
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
+import { NzSliderModule } from 'ng-zorro-antd/slider';
+import { DetectionRule } from '../../model/detection-rule.interface';
+
+@Component({
+  selector: 'app-rule-card',
+  standalone: true,
+  imports: [CommonModule, FormsModule, LucideAngularModule, NzSliderModule],
+  template: `
+    <div
+      [class]="'bg-white rounded-lg shadow-lg p-4 sm:p-6 transition-all ' + 
+               (rule.enabled ? 'border-l-4 border-green-500' : 'opacity-60')"
+    >
+      <!-- Header Section -->
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+          <div [class]="(rule.enabled ? 'bg-green-500' : 'bg-gray-400') + ' p-2 sm:p-3 rounded-lg flex-shrink-0'">
+            <lucide-angular 
+              [name]="rule.icon" 
+              class="w-5 h-5 sm:w-6 sm:h-6 text-white">
+            </lucide-angular>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-col gap-2 mb-2">
+              <h4 class="text-gray-900 font-medium text-sm sm:text-base truncate pr-2">{{ rule.name }}</h4>
+              <span
+                [class]="'text-xs px-2 py-1 rounded w-fit ' + getSeverityClass(rule.severity)"
+              >
+                {{ rule.severity }} Risk
+              </span>
+            </div>
+            <p class="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4 leading-relaxed pr-2">{{ rule.description }}</p>
+          </div>
+        </div>
+        <button
+          (click)="onToggleRule()"
+          [class]="'ml-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm flex-shrink-0 whitespace-nowrap ' + 
+                   (rule.enabled 
+                     ? 'bg-green-500 text-white hover:bg-green-600' 
+                     : 'bg-gray-200 text-gray-600 hover:bg-gray-300')"
+        >
+          {{ rule.enabled ? 'Enabled' : 'Disabled' }}
+        </button>
+      </div>
+
+      <!-- Threshold Section -->
+      <div *ngIf="rule.enabled" class="bg-gray-50 rounded-lg p-3 sm:p-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-2">
+          <div class="flex items-center gap-2">
+            <lucide-angular name="sliders-horizontal" class="w-3 h-3 sm:w-4 sm:h-4 text-gray-500"></lucide-angular>
+            <span class="text-xs sm:text-sm font-medium text-gray-700">Threshold</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-lg sm:text-xl font-bold text-[#1F3A7D]">{{ rule.threshold }}</span>
+            <span class="text-xs sm:text-sm text-gray-500">{{ rule.thresholdType }}</span>
+          </div>
+        </div>
+        <nz-slider
+          [nzMin]="0"
+          [nzMax]="100"
+          [ngModel]="rule.threshold"
+          (ngModelChange)="onThresholdChange($event)"
+          class="w-full">
+        </nz-slider>
+        <div class="flex justify-between text-xs text-gray-500 mt-1">
+          <span>0</span>
+          <span>50</span>
+          <span>100</span>
+        </div>
+      </div>
+    </div>
+  `
+})
+export class RuleCardComponent {
+  @Input() rule!: DetectionRule;
+  @Output() toggleRule = new EventEmitter<string>();
+  @Output() thresholdChange = new EventEmitter<{id: string, value: number}>();
+
+  getSeverityClass(severity: string): string {
+    switch (severity) {
+      case 'High':
+        return 'bg-red-100 text-red-700';
+      case 'Medium':
+        return 'bg-orange-100 text-orange-700';
+      case 'Low':
+        return 'bg-yellow-100 text-yellow-700';
+      default:
+        return 'bg-gray-100 text-gray-700';
+    }
+  }
+
+  onToggleRule(): void {
+    this.toggleRule.emit(this.rule.id);
+  }
+
+  onThresholdChange(value: number): void {
+    this.thresholdChange.emit({ id: this.rule.id, value });
+  }
+}

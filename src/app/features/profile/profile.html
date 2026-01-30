@@ -1,0 +1,396 @@
+<nz-spin [nzSpinning]="loading()" nzTip="Saving...">
+  <div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3A7D] mb-2">Profile Settings</h1>
+        <p class="text-gray-600 text-base sm:text-lg">
+          Manage your account information and preferences
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+          <!-- Navigation Tabs -->
+          <div class="bg-white rounded-lg shadow p-3 sm:p-4 mb-4">
+            <div class="space-y-1 sm:space-y-2">
+              <button
+                (click)="setActiveTab('personal')"
+                [class]="'w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-sm ' +
+                         (activeTab() === 'personal' ? 'bg-[#1F3A7D] text-white' : 'text-gray-700 hover:bg-gray-100')"
+              >
+                <lucide-angular name="user" class="flex w-4 h-4 sm:w-5 sm:h-5"></lucide-angular>
+                <span class="hidden sm:inline">Personal Info</span>
+                <span class="sm:hidden">Personal</span>
+              </button>
+              <button
+                (click)="setActiveTab('security')"
+                [class]="'w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-sm ' +
+                         (activeTab() === 'security' ? 'bg-[#1F3A7D] text-white' : 'text-gray-700 hover:bg-gray-100')"
+              >
+                <lucide-angular name="shield" class="flex w-4 h-4 sm:w-5 sm:h-5"></lucide-angular>
+                <span>Security</span>
+              </button>
+              <button
+                (click)="setActiveTab('preferences')"
+                [class]="'w-full flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-colors text-sm ' +
+                         (activeTab() === 'preferences' ? 'bg-[#1F3A7D] text-white' : 'text-gray-700 hover:bg-gray-100')"
+              >
+                <lucide-angular name="bell" class="flex w-4 h-4 sm:w-5 sm:h-5"></lucide-angular>
+                <span class="hidden sm:inline">Preferences</span>
+                <span class="sm:hidden">Prefs</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Profile Picture -->
+          <div class="bg-white rounded-lg shadow p-4 sm:p-6 text-center">
+            <div class="w-16 h-16 sm:w-24 sm:h-24 bg-[#1F3A7D] rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <lucide-angular name="user" class="w-8 h-8 sm:w-12 sm:h-12 text-white"></lucide-angular>
+            </div>
+            <h3 class="font-semibold text-gray-900 text-sm sm:text-base">{{ profile().firstName }} {{ profile().lastName }}</h3>
+            <p class="text-xs sm:text-sm text-gray-500">{{ profile().role }}</p>
+            <button class="mt-3 sm:mt-4 text-xs sm:text-sm text-[#1F3A7D] hover:underline">
+              Change Photo
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+          <!-- Personal Info Tab -->
+          <div *ngIf="activeTab() === 'personal'" class="bg-white rounded-lg shadow">
+            <div class="p-4 sm:p-6 border-b border-gray-200">
+              <h3 class="text-gray-900 font-medium text-base sm:text-lg">Personal Information</h3>
+            </div>
+            <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                  <input
+                    type="text"
+                    [value]="profile().firstName"
+                    (input)="updateProfile('firstName', $any($event.target).value)"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                  <input
+                    type="text"
+                    [value]="profile().lastName"
+                    (input)="updateProfile('lastName', $any($event.target).value)"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <lucide-angular name="mail" class="w-4 h-4"></lucide-angular>
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  [value]="profile().email"
+                  (input)="updateProfile('email', $any($event.target).value)"
+                  class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <lucide-angular name="phone" class="flex w-4 h-4"></lucide-angular>
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  [value]="profile().phone"
+                  (input)="updateProfile('phone', $any($event.target).value)"
+                  class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
+                  <input
+                    type="text"
+                    [value]="profile().jobTitle"
+                    (input)="updateProfile('jobTitle', $any($event.target).value)"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                  />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Department</label>
+                  <input
+                    type="text"
+                    [value]="profile().department"
+                    (input)="updateProfile('department', $any($event.target).value)"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+
+              <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+                <button class="px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+                  Cancel
+                </button>
+                <button
+                  (click)="saveProfile()"
+                  class="px-4 sm:px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] flex items-center justify-center gap-2 text-sm"
+                >
+                  <lucide-angular name="save" class="flex w-4 h-4"></lucide-angular>
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Tab -->
+          <div *ngIf="activeTab() === 'security'" class="space-y-4 sm:space-y-6">
+            <!-- Change Password -->
+            <div class="bg-white rounded-lg shadow">
+              <div class="p-4 sm:p-6 border-b border-gray-200">
+                <div class="flex items-center gap-2">
+                  <lucide-angular name="key" class="flex w-4 h-4 sm:w-5 sm:h-5 text-[#1F3A7D]"></lucide-angular>
+                  <h3 class="text-gray-900 font-medium text-base sm:text-lg">Change Password</h3>
+                </div>
+              </div>
+              <div class="p-4 sm:p-6 space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                  <input
+                    type="password"
+                    class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                  />
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                    <input
+                      type="password"
+                      class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                    <input
+                      type="password"
+                      class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+                    />
+                  </div>
+                </div>
+                <div class="flex justify-end pt-2">
+                  <button class="px-4 sm:px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] text-sm">
+                    Update Password
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Two-Factor Authentication -->
+            <div class="bg-white rounded-lg shadow">
+              <div class="p-4 sm:p-6 border-b border-gray-200">
+                <div class="flex items-center gap-2">
+                  <lucide-angular name="shield" class="flex w-4 h-4 sm:w-5 sm:h-5 text-[#1F3A7D]"></lucide-angular>
+                  <h3 class="text-gray-900 font-medium text-base sm:text-lg">Two-Factor Authentication</h3>
+                </div>
+              </div>
+              <div class="p-4 sm:p-6">
+                <div [class]="'flex flex-col sm:flex-row sm:items-center justify-between p-4 border rounded-lg mb-4 gap-3 ' +
+                             (security().twoFactorEnabled ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')">
+                  <div>
+                    <p [class]="'font-medium ' + (security().twoFactorEnabled ? 'text-green-900' : 'text-red-900')">
+                      2FA is {{ security().twoFactorEnabled ? 'enabled' : 'disabled' }}
+                    </p>
+                    <p [class]="'text-sm ' + (security().twoFactorEnabled ? 'text-green-700' : 'text-red-700')">
+                      {{ security().twoFactorEnabled ? 'Your account is protected' : 'Enable for better security' }}
+                    </p>
+                  </div>
+                  <button
+                    (click)="toggleTwoFactor()"
+                    [class]="'px-4 py-2 border rounded-lg hover:bg-opacity-80 text-sm ' +
+                             (security().twoFactorEnabled ? 'border-green-700 text-green-700 hover:bg-green-100' : 'border-red-700 text-red-700 hover:bg-red-100')"
+                  >
+                    {{ security().twoFactorEnabled ? 'Disable' : 'Enable' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Active Sessions -->
+            <div class="bg-white rounded-lg shadow">
+              <div class="p-4 sm:p-6 border-b border-gray-200">
+                <h3 class="text-gray-900 font-medium text-base sm:text-lg">Active Sessions</h3>
+              </div>
+              <div class="p-4 sm:p-6 space-y-3">
+                <div *ngFor="let session of security().activeSessions"
+                     class="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-200 rounded-lg gap-3">
+                  <div class="flex-1">
+                    <p class="font-medium text-gray-900 text-sm">
+                      {{ session.isCurrent ? 'Current Session' : session.device }}
+                    </p>
+                    <p class="text-sm text-gray-600">{{ session.device }} • {{ session.browser }} • {{ session.location }}</p>
+                    <p class="text-xs text-gray-500 mt-1">Last active: {{ session.lastActive }}</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span *ngIf="session.isCurrent" class="text-xs px-3 py-1 bg-green-100 text-green-700 rounded-full">
+                      Active
+                    </span>
+                    <button *ngIf="!session.isCurrent"
+                            (click)="revokeSession(session.id)"
+                            class="text-sm text-red-600 hover:underline">
+                      Revoke
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preferences Tab -->
+          <div *ngIf="activeTab() === 'preferences'" class="space-y-4 sm:space-y-6">
+            <!-- Language & Region -->
+            <div class="bg-white rounded-lg shadow">
+              <div class="p-4 sm:p-6 border-b border-gray-200">
+                <div class="flex items-center gap-2">
+                  <lucide-angular name="globe" class="w-4 h-4 sm:w-5 sm:h-5 text-[#1F3A7D]"></lucide-angular>
+                  <h3 class="text-gray-900 font-medium text-base sm:text-lg">Language & Region</h3>
+                </div>
+              </div>
+              <div class="p-4 sm:p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                    <select
+                      [value]="preferences().language"
+                      (change)="updatePreferences('language', '', $any($event.target).value)"
+                      class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] text-sm">
+                      <option value="fr">French (FR)</option>
+                      <option value="en">English (EN)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Time Zone</label>
+                    <select
+                      [value]="preferences().timezone"
+                      (change)="updatePreferences('timezone', '', $any($event.target).value)"
+                      class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] text-sm">
+                      <option value="Africa/Douala">Africa/Douala (GMT+1)</option>
+                      <option value="Africa/Lagos">Africa/Lagos (GMT+1)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
+                    <select
+                      [value]="preferences().dateFormat"
+                      (change)="updatePreferences('dateFormat', '', $any($event.target).value)"
+                      class="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] text-sm">
+                      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notification Settings -->
+            <div class="bg-white rounded-lg shadow">
+              <div class="p-4 sm:p-6 border-b border-gray-200">
+                <div class="flex items-center gap-2">
+                  <lucide-angular name="bell" class="flexw-4 h-4 sm:w-5 sm:h-5 text-[#1F3A7D]"></lucide-angular>
+                  <h3 class="text-gray-900 font-medium text-base sm:text-lg">Notification Preferences</h3>
+                </div>
+              </div>
+              <div class="p-4 sm:p-6 space-y-4">
+                <label class="flex items-center justify-between cursor-pointer">
+                  <div>
+                    <p class="font-medium text-gray-900 text-sm">Email Notifications</p>
+                    <p class="text-xs sm:text-sm text-gray-600">Receive email updates for high-priority cases</p>
+                  </div>
+                  <nz-switch
+                    [ngModel]="preferences().notifications.emailNotifications"
+                    (ngModelChange)="updatePreferences('notifications', 'emailNotifications', $event)">
+                  </nz-switch>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                  <div>
+                    <p class="font-medium text-gray-900 text-sm">Weekly Digest</p>
+                    <p class="text-xs sm:text-sm text-gray-600">Summary of cases and activity every Monday</p>
+                  </div>
+                  <nz-switch
+                    [ngModel]="preferences().notifications.weeklyDigest"
+                    (ngModelChange)="updatePreferences('notifications', 'weeklyDigest', $event)">
+                  </nz-switch>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                  <div>
+                    <p class="font-medium text-gray-900 text-sm">System Alerts</p>
+                    <p class="text-xs sm:text-sm text-gray-600">Critical system updates and maintenance</p>
+                  </div>
+                  <nz-switch
+                    [ngModel]="preferences().notifications.systemAlerts"
+                    (ngModelChange)="updatePreferences('notifications', 'systemAlerts', $event)">
+                  </nz-switch>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                  <div>
+                    <p class="font-medium text-gray-900 text-sm">Case Assignments</p>
+                    <p class="text-xs sm:text-sm text-gray-600">Notify me when a case is assigned to me</p>
+                  </div>
+                  <nz-switch
+                    [ngModel]="preferences().notifications.caseAssignments"
+                    (ngModelChange)="updatePreferences('notifications', 'caseAssignments', $event)">
+                  </nz-switch>
+                </label>
+              </div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="bg-white rounded-lg shadow">
+              <div class="p-4 sm:p-6 border-b border-gray-200">
+                <h3 class="text-gray-900 font-medium text-base sm:text-lg">Display Settings</h3>
+              </div>
+              <div class="p-4 sm:p-6 space-y-4">
+                <label class="flex items-center justify-between cursor-pointer">
+                  <span class="text-sm text-gray-700">Compact Mode</span>
+                  <nz-switch
+                    [ngModel]="preferences().display.compactMode"
+                    (ngModelChange)="updatePreferences('display', 'compactMode', $event)">
+                  </nz-switch>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                  <span class="text-sm text-gray-700">Show Confidence Scores</span>
+                  <nz-switch
+                    [ngModel]="preferences().display.showConfidenceScores"
+                    (ngModelChange)="updatePreferences('display', 'showConfidenceScores', $event)">
+                  </nz-switch>
+                </label>
+                <label class="flex items-center justify-between cursor-pointer">
+                  <span class="text-sm text-gray-700">Enable Animations</span>
+                  <nz-switch
+                    [ngModel]="preferences().display.enableAnimations"
+                    (ngModelChange)="updatePreferences('display', 'enableAnimations', $event)">
+                  </nz-switch>
+                </label>
+              </div>
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                (click)="saveProfile()"
+                class="px-4 sm:px-6 py-2 bg-[#1F3A7D] text-white rounded-lg hover:bg-[#2B4C9F] flex items-center gap-2 text-sm"
+              >
+                <lucide-angular name="save" class="flex w-4 h-4"></lucide-angular>
+                Save Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nz-spin>

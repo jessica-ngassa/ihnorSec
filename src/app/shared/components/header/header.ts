@@ -1,4 +1,5 @@
 import { Component, input } from '@angular/core';
+import { Router } from '@angular/router';
 import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { LucideAngularModule } from 'lucide-angular';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
@@ -12,6 +13,11 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 
 })
 export class Header {
-
   currentPage = input<string | undefined>();
+
+  constructor(private router: Router) {}
+
+  navigateToProfile(): void {
+    this.router.navigate(['/profile']);
+  }
 }
