@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
+import { HighRiskCase } from '../components/recent-high-risk-detections/recent-high-risk-detections';
 
 export interface DashboardKPI {
   label: string;
@@ -63,5 +64,50 @@ export class DashboardService {
       high: 11.7,
       mismatch: 4.9
     }).pipe(delay(700));
+  }
+
+  getHighRiskCases(): Observable<HighRiskCase[]> {
+    return of([
+      {
+        id: 1,
+        person: 'Aminata Traoré',
+        idNumber: 'CI-8765432',
+        riskScore: 88,
+        flagType: 'Ghost Beneficiary',
+        amount: 2300000,
+        dateDetected: '2024-01-20',
+        status: 'Under Investigation'
+      },
+      {
+        id: 2,
+        person: 'Ibrahim Sanogo',
+        idNumber: 'CI-5544332',
+        riskScore: 76,
+        flagType: 'Duplicate Identity',
+        amount: 1800000,
+        dateDetected: '2024-01-20',
+        status: 'Under Investigation'
+      },
+      {
+        id: 3,
+        person: 'Jean Baptiste Kouame',
+        idNumber: 'CI-2345678',
+        riskScore: 94,
+        flagType: 'Duplicate Payment',
+        amount: 4500000,
+        dateDetected: '2024-01-19',
+        status: 'Unassigned'
+      },
+      {
+        id: 4,
+        person: 'Kouassi Brigitte',
+        idNumber: 'CI-9876543',
+        riskScore: 92,
+        flagType: 'Document Forgery',
+        amount: 3200000,
+        dateDetected: '2024-01-18',
+        status: 'Unassigned'
+      }
+    ]).pipe(delay(800));
   }
 }

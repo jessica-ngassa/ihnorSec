@@ -59,6 +59,9 @@ export class AgencySettingsService {
   }
 
   updateSettings(settings: Partial<AgencySettings>): Observable<boolean> {
+    if (settings.branding) {
+      this.mockSettings.branding = { ...this.mockSettings.branding, ...settings.branding };
+    }
     // Simulate API call
     this.mockSettings = { ...this.mockSettings, ...settings };
     return of(true).pipe(delay(1000));

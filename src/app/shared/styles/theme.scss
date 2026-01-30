@@ -1,0 +1,36 @@
+/* Theme CSS Variables */
+:root {
+  --color-primary: #1F3A7D;
+  --color-primary-hover: #162A5A;
+  --color-primary-light: #E9F2FF;
+  --color-accent: #F2C94C;
+}
+
+/* Dynamic theme classes */
+.bg-primary {
+  background-color: var(--color-primary) !important;
+}
+
+.bg-primary-hover:hover {
+  background-color: var(--color-primary-hover) !important;
+}
+
+.bg-primary-light {
+  background-color: var(--color-primary-light) !important;
+}
+
+.text-primary {
+  color: var(--color-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--color-primary) !important;
+}
+
+.bg-accent {
+  background-color: var(--color-accent) !important;
+}
+
+.text-accent {
+  color: var(--color-accent) !important;
+}

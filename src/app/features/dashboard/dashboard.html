@@ -1,4 +1,7 @@
 <div class="p-6 min-h-screen bg-gray-50/50">
+  @if (isLoading()) {
+    <app-loading-spinner message="Loading Dashboard..."></app-loading-spinner>
+  } @else {
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     @for (stat of stats(); track stat.label) {
@@ -41,6 +44,12 @@
     [highRiskCases]="riskData().highRiskCases"
     [totalCases]="riskData().totalAnalyzed">
   </app-organizational-health>
+
+  <app-recent-high-risk-detections
+    [cases]="highRiskCases()"
+    (navigateToCase)="onNavigateToCase($event)"
+    (viewAllCases)="onViewAllCases()">
+  </app-recent-high-risk-detections>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
@@ -102,4 +111,5 @@
 
   <app-sectors-application></app-sectors-application>
 
+  }
 </div>

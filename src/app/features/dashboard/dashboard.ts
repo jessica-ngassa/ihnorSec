@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzIconModule } from 'ng-zorro-antd/icon';
@@ -14,6 +15,8 @@ import { FraudTypesChart } from '../../shared/components/fraud-types-chart/fraud
 import { FraudScoreChart } from '../../shared/components/fraud-score-chart/fraud-score-chart';
 import { SectorsApplication } from "../../shared/components/sectors-application/sectors-application";
 import { OrganizationalHealth } from "../../shared/components/organizational-health/organizational-health";
+import { RecentHighRiskDetections } from '../../shared/components/recent-high-risk-detections/recent-high-risk-detections';
+import { LoadingSpinner } from '../../shared/components/loading-spinner/loading-spinner';
 import { DashboardService } from '../../shared/services/dashboard.service';
 
 @Component({
@@ -21,7 +24,8 @@ import { DashboardService } from '../../shared/services/dashboard.service';
   standalone: true,
   imports: [CommonModule, LucideAngularModule, NzLayoutModule, NzMenuModule,
     NzIconModule, NzAvatarModule, NzBadgeModule, NzCardModule, NzGridModule, NzButtonModule,
-    LucideAngularModule, FraudScoreChart, FraudTypesChart, SectorsApplication, OrganizationalHealth],
+    LucideAngularModule, FraudScoreChart, FraudTypesChart, SectorsApplication, OrganizationalHealth,
+    RecentHighRiskDetections, LoadingSpinner],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -29,8 +33,8 @@ export class Dashboard {
   highRiskCount = 89;
   totalAnalyzed = 247;
 
-
   private dashboardService = inject(DashboardService);
+  private router = inject(Router);
 
   stats = toSignal(this.dashboardService.getDashboardStats(), { initialValue: [] });
 
@@ -46,4 +50,19 @@ export class Dashboard {
     initialValue: { perfect: 0, high: 0, mismatch: 0 }
   });
 
+  highRiskCases = toSignal(this.dashboardService.getHighRiskCases(), {
+    initialValue: []
+  });
+
+  isLoading = computed(() => {
+    return this.stats().length === 0 || this.highRiskCases().length === 0;
+  });
+
+  onNavigateToCase(caseId: string): void {
+    this.router.navigate(['/fraud', caseId]);
+  }
+
+  onViewAllCases(): void {
+    this.router.navigate(['/fraud']);
+  }
 }

@@ -12,6 +12,7 @@ import { AgencySettings as IAgencySettings, SettingsTab, TeamMember } from '../.
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 import { InviteMemberModal, InviteMemberData } from '../../../shared/components/invite-member-modal/invite-member-modal';
+import { ThemeService } from '../../../shared/services/theme.service';
 
 @Component({
   selector: 'app-agency-settings',
@@ -34,23 +35,28 @@ import { InviteMemberModal, InviteMemberData } from '../../../shared/components/
 })
 export class AgencySettings implements OnInit {
   private settingsService = inject(AgencySettingsService);
-  
+  private themeService = inject(ThemeService);
+
   activeTab = signal<SettingsTab>('general');
   isLoading = signal(true);
   showInviteModal = signal(false);
-  
+
   settings = toSignal(this.settingsService.getSettings());
-  
+
   primaryColor = signal('#1F3A7D');
   accentColor = signal('#F2C94C');
 
   constructor() {
-    // Set loading to false when settings arrive
     effect(() => {
       const currentSettings = this.settings();
       if (currentSettings) {
         this.primaryColor.set(currentSettings.branding.primaryColor);
         this.accentColor.set(currentSettings.branding.accentColor);
+        // Update theme service with loaded colors
+        this.themeService.updateColors({
+          primary: currentSettings.branding.primaryColor,
+          accent: currentSettings.branding.accentColor
+        });
         this.isLoading.set(false);
       }
     });
@@ -93,7 +99,6 @@ export class AgencySettings implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Loading state is now handled in constructor effect
   }
 
   onTabChange(tab: SettingsTab): void {
@@ -115,9 +120,21 @@ export class AgencySettings implements OnInit {
   onColorChange(type: 'primary' | 'accent', color: string): void {
     if (type === 'primary') {
       this.primaryColor.set(color);
+      this.themeService.updateColors({ primary: color });
     } else {
       this.accentColor.set(color);
+      this.themeService.updateColors({ accent: color });
     }
+
+    // Save to backend
+    const brandingUpdate = {
+      branding: {
+        primaryColor: this.primaryColor(),
+        accentColor: this.accentColor()
+      }
+    };
+
+    this.settingsService.updateSettings(brandingUpdate).subscribe();
   }
 
   onRemoveTeamMember(id: string): void {
@@ -125,7 +142,7 @@ export class AgencySettings implements OnInit {
   }
 
   getStatusClass(status: string): string {
-    return status === 'Active' 
+    return status === 'Active'
       ? 'bg-green-50 text-green-700 border-green-100'
       : 'bg-orange-50 text-orange-600 border-orange-100';
   }
@@ -141,7 +158,7 @@ export class AgencySettings implements OnInit {
       email: memberData.email,
       role: memberData.role
     };
-    
+
     this.settingsService.addTeamMember(newMember).subscribe({
       next: () => {
         // Member added successfully

@@ -1,6 +1,7 @@
 
 @import "tailwindcss";
 @import "./tailwind-theme.css";
+@import "./app/shared/styles/theme.scss";
 
 @layer base {
   html, body {
