@@ -1,0 +1,228 @@
+// Modern Reports & Audit component styles
+.reports-container {
+  .template-card {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px 0 rgba(31, 58, 125, 0.1);
+    }
+
+    &.selected {
+      background: rgba(31, 58, 125, 0.05);
+      border-color: #1F3A7D;
+    }
+  }
+
+  .schedule-card {
+    background: linear-gradient(135deg, #1F3A7D 0%, #2B4C9F 100%);
+    
+    &:hover {
+      .schedule-icon {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .preview-container {
+    animation: slideInUp 0.5s ease-out;
+  }
+
+  .loading-spinner {
+    .spinner-ring {
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  .audit-row {
+    &:hover {
+      background-color: rgba(249, 250, 251, 0.5);
+    }
+  }
+
+  .user-avatar {
+    background: rgba(31, 58, 125, 0.1);
+    color: #1F3A7D;
+  }
+
+  .risk-badge {
+    &.critical {
+      background-color: #fef2f2;
+      color: #dc2626;
+      border-color: #fecaca;
+    }
+
+    &.high {
+      background-color: #fff7ed;
+      color: #ea580c;
+      border-color: #fed7aa;
+    }
+
+    &.medium {
+      background-color: #eff6ff;
+      color: #2563eb;
+      border-color: #dbeafe;
+    }
+
+    &.low {
+      background-color: #f9fafb;
+      color: #6b7280;
+      border-color: #e5e7eb;
+    }
+  }
+
+  .tab-button {
+    &.active {
+      background: #1F3A7D;
+      color: white;
+    }
+
+    &:not(.active) {
+      color: #6b7280;
+      
+      &:hover {
+        color: #374151;
+      }
+    }
+  }
+
+  .generate-button {
+    background: #1F3A7D;
+    box-shadow: 0 4px 14px 0 rgba(31, 58, 125, 0.1);
+    
+    &:hover {
+      background: #162A5A;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px 0 rgba(31, 58, 125, 0.15);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      transform: none;
+      box-shadow: none;
+    }
+  }
+
+  .preview-document {
+    background: white;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    
+    .document-header {
+      border-bottom: 2px solid #f3f4f6;
+    }
+
+    .metric-box {
+      &.blue {
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+        
+        .metric-value {
+          color: #1d4ed8;
+        }
+      }
+
+      &.red {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        
+        .metric-value {
+          color: #dc2626;
+        }
+      }
+    }
+
+    .content-lines {
+      .line {
+        background: #f3f4f6;
+        border-radius: 4px;
+        height: 16px;
+      }
+    }
+  }
+
+  .search-input {
+    &:focus {
+      ring: 2px;
+      ring-color: rgba(31, 58, 125, 0.1);
+      border-color: #1F3A7D;
+    }
+  }
+
+  .filter-button {
+    &:hover {
+      background: #f9fafb;
+    }
+  }
+
+  .export-button {
+    background: #1F3A7D;
+    
+    &:hover {
+      background: #162A5A;
+    }
+  }
+}
+
+// Animations
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// Responsive design
+@media (max-width: 1024px) {
+  .reports-container {
+    .grid-cols-3 {
+      grid-template-columns: 1fr;
+    }
+    
+    .lg\\:col-span-1,
+    .lg\\:col-span-2 {
+      grid-column: span 1;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-container {
+    .flex-col {
+      flex-direction: column;
+    }
+    
+    .md\\:flex-row {
+      flex-direction: column;
+    }
+    
+    .gap-8 {
+      gap: 1rem;
+    }
+    
+    .p-6 {
+      padding: 1rem;
+    }
+  }
+}

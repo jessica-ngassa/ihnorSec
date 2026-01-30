@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal, computed, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,11 +8,12 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TableFilter } from '../../../shared/table-filter/table-filter';
 import { FraudService } from '../../../shared/services/fraud.service';
 import { DataTable } from "../../../shared/components/data-table/data-table";
+import { LoadingSpinner } from "../../../shared/components/loading-spinner/loading-spinner";
 
 @Component({
   selector: 'app-fraud',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, TableFilter, FormsModule, DataTable],
+  imports: [CommonModule, LucideAngularModule, TableFilter, FormsModule, DataTable, LoadingSpinner],
   templateUrl: './fraud.html',
   styleUrl: './fraud.scss',
 })
@@ -24,9 +25,20 @@ export class Fraud {
   isFilterVisible = signal(false);
   searchValue = signal('');
   activeFilters = signal({ range: [0, 100], status: 'All' });
+  isLoading = signal(true);
 
   // Fetch Data
   rawFraudData = toSignal(this.fraudService.getFraudCases(), { initialValue: [] });
+
+  constructor() {
+    // Set loading to false when data arrives
+    effect(() => {
+      const data = this.rawFraudData();
+      if (data.length > 0) {
+        this.isLoading.set(false);
+      }
+    });
+  }
 
   // Filter Logic
   filteredData = computed(() => {
@@ -111,7 +123,7 @@ export class Fraud {
       'Assigned To': row.assignedTo || 'Unassigned',
       'Status': row.status
     }));
-    
+
     const csvContent = this.convertToCSV(worksheet);
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -124,12 +136,12 @@ export class Fraud {
 
   private convertToCSV(data: any[]): string {
     if (!data.length) return '';
-    
+
     const headers = Object.keys(data[0]);
-    const rows = data.map(item => 
+    const rows = data.map(item =>
       headers.map(header => `"${String(item[header]).replace(/"/g, '""')}"`).join(',')
     );
-    
+
     return [headers.join(','), ...rows].join('\n');
   }
 }

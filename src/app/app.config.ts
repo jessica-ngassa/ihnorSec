@@ -7,7 +7,7 @@ import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideHttpClient } from '@angular/common/http';
-import { LucideAngularModule, Shield, Bell, User, UserCheck, AlertTriangle, AlertCircle, Upload, FilePlus, BellDot, Eye, Search, SlidersHorizontal, ZoomIn, RotateCw, FileText, FileCheck, FileImage, Activity, Users, BarChart3, ShieldAlert, DollarSign, ArrowLeft, Check, Download, CheckCircle, X, ZoomOut, TrendingUp, Calendar, FileSpreadsheet, Info, CreditCard, Banknote, Landmark, UploadCloud, CheckCircle2, ArrowRight, Loader2, BarChart2, Globe, Settings, Database, Link2 } from 'lucide-angular';
+import { LucideAngularModule, Shield, Bell, User, UserCheck, AlertTriangle, AlertCircle, Upload, FilePlus, BellDot, Eye, Search, SlidersHorizontal, ZoomIn, RotateCw, FileText, FileCheck, FileImage, Activity, Users, BarChart3, ShieldAlert, DollarSign, ArrowLeft, Check, Download, CheckCircle, X, ZoomOut, TrendingUp, Calendar, FileSpreadsheet, Info, CreditCard, Banknote, Landmark, UploadCloud, CheckCircle2, ArrowRight, Loader2, BarChart2, Globe, Settings, Database, Link2, Filter, Clock, Mail, Plus, Trash2, History, FileDown } from 'lucide-angular';
 
 registerLocaleData(en);
 
@@ -63,7 +63,14 @@ export const appConfig: ApplicationConfig = {
         Globe,
         Settings,
         Database,
-        Link2
+        Link2,
+        Filter,
+        Clock,
+        Mail,
+        Plus,
+        Trash2,
+        History,
+        FileDown
       })
     )
   ]

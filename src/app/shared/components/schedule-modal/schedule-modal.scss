@@ -1,0 +1,40 @@
+// Schedule Modal Styles
+.schedule-modal {
+  .template-option {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f9fafb;
+    }
+    
+    &.selected {
+      border-color: #1F3A7D;
+      background-color: #eff6ff;
+    }
+  }
+  
+  .frequency-option {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: #f9fafb;
+    }
+    
+    &.selected {
+      border-color: #1F3A7D;
+      background-color: #eff6ff;
+    }
+  }
+  
+  .recipients-textarea {
+    &:focus {
+      ring: 2px;
+      ring-color: rgba(31, 58, 125, 0.1);
+      border-color: #1F3A7D;
+    }
+  }
+  
+  .preview-box {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  }
+}

@@ -1,4 +1,298 @@
-  <div class="p-6">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-4">Reports & Audit</h1>
-      <p class="text-gray-600">Reports and audit functionality coming soon.</p>
+<div class="p-6 bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-end">
+      <div>
+        <h1 class="text-2xl font-black text-[#1F3A7D] mb-1">Reports & Audit Logs</h1>
+        <p class="text-gray-500 font-medium">Generate agency-specific analytics and track system compliance</p>
+      </div>
+      <div class="flex gap-2">
+        <div class="bg-white border border-gray-200 rounded-lg flex p-1 shadow-sm">
+          <button
+            (click)="onTabChange('reports')"
+            [class]="'px-4 py-1.5 rounded-md text-sm font-bold transition-all ' +
+              (activeTab() === 'reports' ? 'bg-[#1F3A7D] text-white' : 'text-gray-500 hover:text-gray-700')">
+            Reports
+          </button>
+          <button
+            (click)="onTabChange('audit')"
+            [class]="'px-4 py-1.5 rounded-md text-sm font-bold transition-all ' +
+              (activeTab() === 'audit' ? 'bg-[#1F3A7D] text-white' : 'text-gray-500 hover:text-gray-700')">
+            Audit Logs
+          </button>
+        </div>
+      </div>
     </div>
+
+    <!-- Reports Tab -->
+    @if (activeTab() === 'reports') {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column -->
+        <div class="lg:col-span-1 space-y-4">
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 class="font-bold text-[#1F3A7D]">Available Templates</h3>
+              <nz-tag class="bg-blue-50 text-blue-600 border-blue-100">{{ reportTemplates().length }}</nz-tag>
+            </div>
+            <div class="p-2 max-h-[600px] overflow-y-auto">
+              @for (template of reportTemplates(); track template.id) {
+                <div
+                  (click)="onTemplateSelect(template)"
+                  [class]="'p-4 rounded-lg cursor-pointer transition-all mb-2 ' +
+                    (selectedTemplate()?.id === template.id
+                      ? 'bg-[#1F3A7D]/5 border-2 border-[#1F3A7D]'
+                      : 'bg-white border-2 border-transparent hover:bg-gray-50 hover:border-gray-200')">
+
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="p-2 bg-gray-100 rounded-lg">
+                      <lucide-icon
+                        name="file-text"
+                        [class]="'w-5 h-5 ' + (selectedTemplate()?.id === template.id ? 'text-[#1F3A7D]' : 'text-gray-400')">
+                      </lucide-icon>
+                    </div>
+                    <div class="flex-1">
+                      <h4 class="text-sm font-bold text-gray-900 leading-tight mb-1">{{ template.name }}</h4>
+                      <div class="flex items-center gap-2 mt-2">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">{{ template.frequency }}</span>
+                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase">{{ template.format }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="bg-[#1F3A7D] rounded-xl p-6 text-white shadow-lg relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+              <lucide-icon name="clock" class="flex w-16 h-16"></lucide-icon>
+            </div>
+            <h4 class="font-bold mb-2 relative z-10">Automated Scheduling</h4>
+            <p class="text-sm text-blue-100 mb-4 opacity-80 relative z-10">
+              Configure these reports to be automatically delivered to stakeholders.
+            </p>
+            <button
+              (click)="openScheduleModal()"
+              class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-bold transition-all border border-white/20 relative z-10">
+              Manage Schedules
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="lg:col-span-2">
+          @if (selectedTemplate(); as template) {
+            <div class="space-y-6">
+              <!-- Template  -->
+              <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div class="flex justify-between items-start mb-6">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-3">
+                      <h2 class="text-xl font-black text-gray-900">{{ template.name }}</h2>
+                      <nz-tag [class]="getRiskLevelClass(template.riskLevel)">
+                        {{ template.riskLevel }} Priority
+                      </nz-tag>
+                    </div>
+                    <p class="text-gray-500 font-medium">{{ template.description }}</p>
+                  </div>
+                  <div class="flex gap-2">
+                    <button
+                      nz-button
+                      nzType="primary"
+                      [nzLoading]="isGenerating()"
+                      (click)="onGenerateReport(template)"
+                      class="bg-[#1F3A7D] hover:bg-[#162A5A] font-bold h-10 px-6 rounded-lg shadow-lg shadow-blue-900/10">
+                      @if (isGenerating()) {
+                        <lucide-icon name="loader-2" class="flex w-4 h-4 animate-spin mr-2"></lucide-icon>
+                        Generating...
+                      } @else {
+                        Generate Report
+                      }
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 pt-6 border-t border-gray-100">
+                  <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Frequency</p>
+                    <p class="font-bold text-gray-800">{{ template.frequency }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Last Generated</p>
+                    <p class="font-bold text-gray-800">{{ template.lastGenerated }}</p>
+                  </div>
+                  <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Export Format</p>
+                    <div class="flex items-center gap-1.5 font-bold text-gray-800">
+                      <lucide-icon name="file-down" class="w-4 h-4 text-blue-500"></lucide-icon>
+                      {{ template.format }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Report Preview -->
+              @if (isGenerating() || showPreview()) {
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-lg">
+                  <div class="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">Live Preview</span>
+                    </div>
+                    <div class="flex gap-2">
+                      <button
+                        (click)="onDownloadReport()"
+                        class="flex items-center gap-2 px-4 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-bold text-gray-700 hover:bg-gray-50 transition-all">
+                        <lucide-icon name="download" class="w-3.5 h-3.5"></lucide-icon>
+                        Download
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="p-12 bg-gray-100/50 min-h-[400px] flex items-center justify-center relative">
+                    @if (isGenerating()) {
+                      <div class="text-center space-y-4">
+                        <div class="relative inline-block">
+                          <div class="w-16 h-16 border-4 border-blue-50 rounded-full"></div>
+                          <div class="w-16 h-16 border-4 border-[#1F3A7D] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                        </div>
+                        <p class="font-bold text-[#1F3A7D] animate-pulse">Analyzing system records...</p>
+                      </div>
+                    } @else {
+                      <div class="bg-white w-full max-w-2xl shadow-2xl rounded-lg p-10 transform transition-all border border-gray-200">
+                        <div class="flex justify-between items-start mb-10">
+                          <div class="space-y-2">
+                            <h1 class="text-3xl font-black text-[#1F3A7D] leading-none">IHNOR</h1>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">SECURE PLATFORM</p>
+                          </div>
+                          <div class="text-right">
+                            <p class="text-sm font-black text-gray-900">{{ template.name }}</p>
+                            <p class="text-xs text-gray-500 font-bold">Generated: Jan 21, 2026</p>
+                          </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-8 mb-10">
+                          <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-500 uppercase mb-1">Total Records Scanned</p>
+                            <p class="text-2xl font-black text-[#1F3A7D]">12,450</p>
+                          </div>
+                          <div class="p-4 bg-red-50 rounded-xl border border-red-100">
+                            <p class="text-[10px] font-bold text-red-500 uppercase mb-1">Anomalies Detected</p>
+                            <p class="text-2xl font-black text-red-600">47</p>
+                          </div>
+                        </div>
+
+                        <div class="space-y-6">
+                          <div class="h-4 bg-gray-100 rounded w-full"></div>
+                          <div class="h-4 bg-gray-100 rounded w-[90%]"></div>
+                          <div class="h-4 bg-gray-100 rounded w-[95%]"></div>
+                          <div class="h-4 bg-gray-100 rounded w-[40%]"></div>
+                        </div>
+
+                        <div class="mt-16 pt-6 border-t border-gray-100 flex justify-between items-center opacity-50">
+                          <p class="text-[10px] font-bold text-gray-400">ID: {{ template.id }}-2026-X</p>
+                          <p class="text-[10px] font-bold text-gray-400 text-right uppercase tracking-widest font-mono">End of Document</p>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="h-full flex flex-col items-center justify-center text-center p-12 bg-white rounded-xl border border-gray-200 border-dashed">
+              <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                <lucide-icon name="file-text" class="w-8 h-8 text-gray-300"></lucide-icon>
+              </div>
+              <h3 class="font-bold text-gray-900">No template selected</h3>
+              <p class="text-sm text-gray-500 max-w-[240px] mt-1">
+                Select a report template from the left to view details and generate analytics.
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Audit Logs Tab -->
+    @if (activeTab() === 'audit') {
+      <div class="space-y-6">
+        <!-- Search and Filter -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col md:flex-row gap-4">
+          <div class="flex-1 relative">
+            <lucide-icon name="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"></lucide-icon>
+            <input
+              type="text"
+              placeholder="Search by action, user, or IP..."
+              [ngModel]="searchTerm()"
+              (ngModelChange)="onSearchChange($event)"
+              class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#1F3A7D]/10 outline-none transition-all" />
+          </div>
+          <div class="flex gap-2">
+            <button class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+              <lucide-icon name="filter" class="flex w-4 h-4"></lucide-icon>
+              Filters
+            </button>
+            <button class="px-4 py-2 bg-[#1F3A7D] text-white rounded-lg text-sm font-bold hover:bg-[#162A5A] flex items-center gap-2">
+              <lucide-icon name="download" class="flex w-4 h-4"></lucide-icon>
+              Export logs
+            </button>
+          </div>
+        </div>
+
+        <!-- Audit Table -->
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200">
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Timestamp</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">User</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Action</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">Result</th>
+                  <th class="px-6 py-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-right">Device/IP</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for (log of getFilteredAuditLogs(); track $index) {
+                  <tr class="hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4 text-xs font-bold text-gray-900 font-mono">{{ log.timestamp }}</td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 bg-[#1F3A7D]/10 text-[#1F3A7D] rounded-full flex items-center justify-center text-[10px] font-black">
+                          {{ log.user.charAt(0) }}
+                        </div>
+                        <span class="text-xs font-bold text-gray-900">{{ log.user }}</span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">
+                      <p class="text-xs font-bold text-gray-700">{{ log.action }}</p>
+                      <p class="text-[10px] text-gray-400 font-medium">{{ log.object }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                      <nz-tag class="bg-green-50 text-green-700 border-green-100">{{ log.result }}</nz-tag>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <p class="text-xs font-bold text-gray-700">{{ log.device }}</p>
+                      <p class="text-[10px] text-gray-400 font-mono font-medium">{{ log.ip }}</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Schedule Modal -->
+    <app-schedule-modal
+      [isOpen]="showScheduleModal()"
+      [reportTemplates]="reportTemplates()"
+      [agencyId]="agencyId()"
+      (close)="closeScheduleModal()"
+      (confirm)="onScheduleConfirm($event)">
+    </app-schedule-modal>
+  </div>
+</div>
