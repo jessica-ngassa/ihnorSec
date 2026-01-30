@@ -74,7 +74,8 @@ src/app/
 │   ├── components/         # Reusable UI components
 │   │   ├── comparison-table/    # Data comparison tables
 │   │   ├── anomalies-detected/ # Anomaly display
-│   │   └── ocr-document-viewer/ # Document viewer
+│   │   ├── ocr-document-viewer/ # Document viewer
+│   │   └── module-card/    # Reusable module card component
 │   ├── model/             # TypeScript interfaces
 │   └── services/          # Data services
 │       └── translation.service.ts # Runtime translation service

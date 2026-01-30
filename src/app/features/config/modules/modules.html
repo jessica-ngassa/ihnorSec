@@ -1,4 +1,66 @@
-    <div class="p-6">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-4">Modules</h1>
-      <p class="text-gray-600">Module configuration coming soon.</p>
+<div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6 sm:mb-8">
+      <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3A7D] mb-2">Module Configuration</h1>
+      <p class="text-gray-600 text-base sm:text-lg">
+        Enable or disable platform modules for your organization
+      </p>
     </div>
+
+    <!-- Module Overview -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <div>
+          <h2 class="text-lg sm:text-xl font-semibold text-[#1F3A7D] mb-1">Active Modules</h2>
+          <p class="text-gray-600 text-sm sm:text-base">{{ enabledCount() }} of {{ totalCount() }} modules enabled</p>
+        </div>
+        <div class="text-left sm:text-right">
+          <p class="text-2xl sm:text-3xl font-bold text-[#1F3A7D]">{{ enabledCount() }}/{{ totalCount() }}</p>
+          <p class="text-sm text-gray-500">Enabled</p>
+        </div>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+        <div 
+          class="bg-[#1F3A7D] h-3 rounded-full transition-all"
+          [style.width.%]="progressPercentage()"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Module Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <app-module-card
+        *ngFor="let module of modules()"
+        [module]="module"
+        (toggle)="toggleModule($event)"
+      ></app-module-card>
+    </div>
+
+    <!-- Architecture Note -->
+    <div class="mt-6 sm:mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4 sm:p-6">
+      <h3 class="text-base sm:text-lg font-semibold text-[#1F3A7D] mb-3">Plug-in Architecture</h3>
+      <p class="text-gray-700 text-sm mb-3">
+        Modules are designed as plug-ins that can be turned on/off per agency. This allows:
+      </p>
+      <ul class="space-y-2 text-sm text-gray-600">
+        <li class="flex items-start gap-2">
+          <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+          <span><strong>Custom bundles:</strong> Each agency gets only the tools they need</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+          <span><strong>One codebase:</strong> All modules share the same infrastructure</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+          <span><strong>Easy scaling:</strong> New modules can be added without rewriting</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <div class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+          <span><strong>Clear pricing:</strong> Agencies pay for what they use</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
