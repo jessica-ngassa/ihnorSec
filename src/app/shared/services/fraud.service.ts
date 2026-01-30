@@ -277,20 +277,35 @@ import { FraudCase } from '../../shared/model/fraud-case.model';
 export class FraudService {
 
   private MOCK_DATA: FraudCase[] = [
-    {
+   {
       id: 1,
       recordType: 'identity',
       name: 'Jean Baptiste Kouame',
       idNumber: 'CI-2345678',
+      caseId:   'CASE-2024-001',
       fraudScore: 94,
-      status: 'Unassigned',
+      status: 'Under Investigation',
       documentMatched: false,
+      assignedTo: 'Marie Diop',
+      amount: 4500000,
+      unit: 'Payroll Division',
       systemData: {
-        region: 'Payroll Division',
-        name: 'Jean Baptiste', idNumber: 'CI-2345678', dateOfBirth: ''
+        name: 'Jean Baptiste', idNumber: 'CI-2345678', dateOfBirth: '1985-03-12', region: 'Abidjan'
+      },
+      ocrData: {
+        name: "Jean Baptiste Kouame", dob: "1985-03-12", idNumber: "CI-2345876",
+        issueDate: "2020-05-15", expiryDate: "2030-05-14", address: "Abidjan, Cocody", confidence: 94.5,
+        documentImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&h=400&fit=crop"
       },
       anomalies: [
-        { id: '1', title: 'Duplicate Payment', severity: 'High', description: 'Multiple payroll entries' }
+        { id: '1', title: 'Duplicate Payment', severity: 'High', description: 'Same payment amount found 3 times within 30 days' },
+        { id: '2', title: 'ID Mismatch', severity: 'High', description: 'OCR-extracted ID number differs from system record' },
+        { id: '3', title: 'Procedure Deviation', severity: 'Medium', description: 'Missing secondary approval for amount > 3M' }
+      ],
+      timeline: [
+        { date: '2024-01-15 16:45', user: 'System', action: 'Case created', type: 'system', details: 'High risk case flagged by detection engine' },
+        { date: '2024-01-15 16:44', user: 'System', action: 'OCR processing completed', type: 'system', details: 'Document processed with 89% confidence' },
+        { date: '2024-01-15 16:20', user: 'Paul Koffi', action: 'Document uploaded', type: 'upload', details: 'National ID card uploaded' }
       ]
     },
     {

@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
@@ -7,21 +7,25 @@ import { switchMap } from 'rxjs';
 
 import { AnomaliesDetected } from '../../../shared/components/anomalies-detected/anomalies-detected';
 import { OcrDocumentViewer } from '../../../shared/components/ocr-document-viewer/ocr-document-viewer';
-import { ProfileSummary } from '../../../shared/components/profile-summary/profile-summary';
 import { FraudService } from '../../../shared/services/fraud.service';
 import { ComparisonTable } from '../../../shared/components/comparison-table/comparison-table';
+import { CaseManagement } from '../../../shared/components/case-management/case-management';
+import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
 
 @Component({
   selector: 'app-fraud-detail',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, AnomaliesDetected, OcrDocumentViewer, ProfileSummary, ComparisonTable],
+  imports: [CommonModule, LucideAngularModule, AnomaliesDetected, OcrDocumentViewer, ComparisonTable, CaseManagement, LoadingSpinner],
   templateUrl: './fraud-detail.html',
   styleUrl: './fraud-detail.scss',
 })
 export class FraudDetail {
-private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private fraudService = inject(FraudService);
+
+  // Tabs State
+  activeTab = signal<'evidence' | 'ocr' | 'timeline'>('evidence');
 
   fraudCase = toSignal(
     this.route.paramMap.pipe(
@@ -33,107 +37,58 @@ private route = inject(ActivatedRoute);
     )
   );
 
-  paymentComparison = computed(() => {
+  // Computed Comparisons
+  identityComparison = computed(() => {
     const data = this.fraudCase();
-    if (!data?.paymentData) return [];
+    if (!data?.ocrData || !data?.systemData) return [];
     return [
-      { field: 'Transaction ID', expected: data.paymentData.reference, actual: data.paymentData.transactionId, match: true },
-      { field: 'Recipient Name', expected: data.paymentData.recipientName, actual: data.paymentData.recipientName, match: true },
-      { field: 'Expected Amount', expected: data.paymentData.expectedAmount, actual: data.paymentData.actualAmount, match: false }
+      { field: 'Full Name', system: data.systemData.name, doc: data.ocrData.name, match: data.systemData.name === data.ocrData.name },
+      { field: 'ID Number', system: data.systemData.idNumber, doc: data.ocrData.idNumber, match: data.systemData.idNumber === data.ocrData.idNumber },
+      { field: 'Date of Birth', system: data.systemData.dateOfBirth, doc: data.ocrData.dob, match: data.systemData.dateOfBirth === data.ocrData.dob },
+      { field: 'Issue Date', system: '2020-05-15', doc: data.ocrData.issueDate, match: true } // Mock system date
     ];
   });
+
+  // Helpers
+  formatMoney(amount: number): string {
+    return new Intl.NumberFormat('en-US', { minimumFractionDigits: 0 }).format(amount) + ' FCFA';
+  }
+
+  getSeverityColor(severity: string): string {
+    switch (severity) {
+      case 'High': return 'bg-red-50 text-red-700 border-red-200';
+      case 'Medium': return 'bg-orange-50 text-orange-700 border-orange-200';
+      default: return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+    }
+  }
+
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'Unassigned': return 'bg-yellow-100 text-yellow-800';
+      case 'Under Investigation': return 'bg-blue-100 text-blue-700';
+      case 'Resolved': return 'bg-green-100 text-green-700';
+      default: return 'bg-gray-100 text-gray-700';
+    }
+  }
+
+  getRiskColor(score: number): string {
+    if (score >= 90) return 'bg-red-100 text-red-700';
+    if (score >= 70) return 'bg-orange-100 text-orange-700';
+    return 'bg-green-100 text-green-700';
+  }
 
   goBack() {
     this.router.navigate(['/fraud']);
   }
 
-  getStatusColor(status: string): string {
-    switch (status) {
-      case 'High Risk': return 'border-red-200 bg-red-50 text-red-700';
-      case 'Medium Risk': return 'border-orange-200 bg-orange-50 text-orange-700';
-      case 'Low Risk': return 'border-blue-200 bg-blue-50 text-blue-700';
-      case 'Clean': return 'border-green-200 bg-green-50 text-green-700';
-      default: return 'border-gray-200 bg-gray-50 text-gray-700';
-    }
+  // Sidebar Actions (Placeholder logic)
+  reassign() { console.log('Reassign clicked'); }
+  escalate() { console.log('Escalate clicked'); }
+  closeCase() { console.log('Close Case clicked'); }
+
+  onDocumentLinked(file: File) {
+    console.log('Document linked, calling backend OCR service:', file.name);
+    // Here you would call your OCR service to process the new document
+    // and update the fraud case data
   }
-
-  getRecordConfig = computed(() => {
-    const data = this.fraudCase();
-    if (!data) return null;
-
-    const configs = {
-      identity: {
-        title: 'Identity Analysis',
-        badgeClass: 'bg-blue-100 text-blue-800 border-blue-200',
-        summaryTitle: 'Profile Summary',
-        summaryFields: [
-          { label: 'ID Number', value: data.systemData?.idNumber },
-          { label: 'Region', value: data.systemData?.region },
-          { label: 'Total Anomalies', value: data.anomalies.length, highlight: true }
-        ],
-        comparisonData: this.identityComparison()
-      },
-      payment: {
-        title: 'Payment Analysis',
-        badgeClass: 'bg-green-100 text-green-800 border-green-200',
-        summaryTitle: 'Payment Summary',
-        summaryFields: [
-          { label: 'Transaction ID', value: data.paymentData?.transactionId },
-          { label: 'Expected Amount', value: this.formatMoney(data.paymentData?.expectedAmount || 0) },
-          { label: 'Actual Amount', value: this.formatMoney(data.paymentData?.actualAmount || 0), highlight: true },
-          { label: 'Variance', value: `+${data.paymentData?.variancePercentage}%`, highlight: true }
-        ],
-        comparisonData: this.paymentComparison()
-      },
-      compliance: {
-        title: 'Compliance Analysis',
-        badgeClass: 'bg-purple-100 text-purple-800 border-purple-200',
-        summaryTitle: 'Compliance Summary',
-        summaryFields: [
-          { label: 'Process Step', value: data.complianceData?.processStep },
-          { label: 'Location', value: data.complianceData?.location },
-          { label: 'Total Anomalies', value: data.anomalies.length, highlight: true }
-        ],
-        comparisonData: this.complianceComparison()
-      }
-    };
-
-    return configs[data.recordType as keyof typeof configs] || configs.identity;
-  });
-
-  formatForComparison = (value: any, field: string): string => {
-    if (field.includes('Amount')) {
-      return this.formatMoney(value);
-    }
-    return value?.toString() || '';
-  };
-
-  formatMoney(amount: string | number): string {
-    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(numAmount) + ' XAF';
-  }
-
-  identityComparison = computed(() => {
-    const data = this.fraudCase();
-    if (!data?.ocrData || !data?.systemData) return [];
-    return [
-      { field: 'Name', system: data.systemData.name, doc: data.ocrData.name, match: data.systemData.name === data.ocrData.name },
-      { field: 'ID Number', system: data.systemData.idNumber, doc: data.ocrData.idNumber, match: data.systemData.idNumber === data.ocrData.idNumber },
-      { field: 'Date of Birth', system: data.systemData.dateOfBirth, doc: data.ocrData.dob, match: data.systemData.dateOfBirth === data.ocrData.dob },
-      { field: 'Region', system: data.systemData.region || 'Missing', doc: data.ocrData.address, match: false, isMissing: !data.systemData.region }
-    ];
-  });
-
-  complianceComparison = computed(() => {
-    const data = this.fraudCase();
-    if (!data?.complianceData) return [];
-    return [
-      { field: 'Process Step', expected: data.complianceData.processStep, actual: data.complianceData.processStep, match: true },
-      { field: 'Expected Procedure', expected: data.complianceData.expectedProcedure, actual: data.complianceData.actualProcedure, match: false },
-      { field: 'Measurement', expected: data.complianceData.expectedMeasurement, actual: data.complianceData.measurement, match: false }
-    ];
-  });
 }

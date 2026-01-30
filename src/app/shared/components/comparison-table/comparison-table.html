@@ -13,7 +13,7 @@
     </thead>
     <tbody class="divide-y divide-gray-100">
       @for (row of data; track row.field) {
-        <tr class="hover:bg-gray-50/50">
+        <tr class="hover:bg-gray-50/50" [class.bg-red-50]="!row.match && !row.isMissing" [style.background-color]="!row.match && !row.isMissing ? '#fef3f3' : null">
           <td class="px-6 py-4 font-medium text-gray-900">{{ row.field }}</td>
           <td class="px-6 py-4 text-gray-600">
             {{ formatValue(row.system || row.expected, row.field) }}

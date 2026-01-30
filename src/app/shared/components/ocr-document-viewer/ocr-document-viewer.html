@@ -1,100 +1,109 @@
-<!-- <div class="ocr-wrapper" >
+
+<div class="ocr-wrapper mt-8">
   <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
       <div class="flex flex-col">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-xs font-medium text-gray-500">OCR Document Viewer</h3>
-          <div class="flex gap-3 text-gray-400">
-            <button class="hover:text-brand-blue"><lucide-icon name="search" class="w-4 h-4"></lucide-icon></button>
-            <button class="hover:text-brand-blue"><lucide-icon name="zoom-in" class="w-4 h-4"></lucide-icon></button>
-            <button class="hover:text-brand-blue"><lucide-icon name="rotate-cw" class="w-4 h-4"></lucide-icon></button>
+          <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Document Image</h3>
+          <div class="flex gap-2 text-gray-400 bg-gray-50 p-1 rounded-lg border border-gray-100">
+            <button (click)="zoomOut()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Zoom Out">
+              <lucide-icon name="zoom-out" class="w-4 h-4"></lucide-icon>
+            </button>
+            <button (click)="zoomIn()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Zoom In">
+              <lucide-icon name="zoom-in" class="flex w-4 h-4"></lucide-icon>
+            </button>
+            <button (click)="rotate()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Rotate">
+              <lucide-icon name="rotate-cw" class="flex w-4 h-4"></lucide-icon>
+            </button>
           </div>
         </div>
 
-        <div class="bg-white border border-gray-100 rounded-xl overflow-hidden flex flex-col h-full min-h-[400px]">
-          <div class="flex-grow flex items-center justify-center p-8 bg-gray-50/50">
-            <img [src]="imageSrc()" alt="Extracted Document" class="max-w-full shadow-lg rounded-sm" />
+        <div class="bg-gray-50/50 border border-gray-100 rounded-xl overflow-hidden flex items-center justify-center h-[400px] relative">
+          <div [style.transform]="transformStyle()" class="transition-transform duration-300 ease-in-out">
+            <img [src]="displayImageSrc()" alt="Extracted Document" class="max-w-full shadow-lg rounded-sm" />
           </div>
+        </div>
+        <div class="text-center mt-2 text-xs text-gray-400">Zoom: {{ zoomLevel() }}%</div>
+
+        <div class="flex gap-3 mt-4">
+          <button (click)="reUpload()" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+            <lucide-icon name="upload" class="flex w-4 h-4"></lucide-icon>
+            Re-upload
+          </button>
+          <button
+            (click)="linkDocument()"
+            [disabled]="!newDocument() || isProcessing()"
+            class="flex items-center gap-2 px-4 py-2 text-sm border rounded-lg transition-colors"
+            [class.text-blue-600]="newDocument() && !isProcessing()"
+            [class.border-blue-300]="newDocument() && !isProcessing()"
+            [class.hover:bg-blue-50]="newDocument() && !isProcessing()"
+            [class.text-green-600]="isLinked() && !newDocument()"
+            [class.border-green-300]="isLinked() && !newDocument()"
+            [class.text-gray-400]="!newDocument() && !isLinked() || isProcessing()"
+            [class.border-gray-200]="!newDocument() && !isLinked() || isProcessing()"
+            [class.cursor-not-allowed]="!newDocument() || isProcessing()">
+            @if (isProcessing()) {
+              <lucide-icon name="loader-2" class="flex w-4 h-4 animate-spin"></lucide-icon>
+              Processing...
+            } @else if (isLinked() && !newDocument()) {
+              <lucide-icon name="check-circle" class="flex w-4 h-4"></lucide-icon>
+              Document Linked
+            } @else {
+              <lucide-icon name="link-2" class="flex w-4 h-4"></lucide-icon>
+              Link Document
+            }
+          </button>
         </div>
       </div>
 
       <div class="flex flex-col">
-        <h3 class="text-xs font-medium text-gray-500 mb-4">OCR Extracted Data</h3>
+        <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">OCR Extracted Data</h3>
+        <div class="space-y-3">
+          <ng-container *ngTemplateOutlet="field; context: {label: 'Name', value: processedData()?.name || data().name, status: 'verified'}"></ng-container>
+          <ng-container *ngTemplateOutlet="field; context: {label: 'Date of Birth', value: processedData()?.dob || data().dob, status: 'verified'}"></ng-container>
+          <ng-container *ngTemplateOutlet="field; context: {label: 'ID Number', value: processedData()?.idNumber || data().idNumber, status: 'confirm', systemValue: 'CI-2345678'}"></ng-container>
+          <ng-container *ngTemplateOutlet="field; context: {label: 'Address', value: processedData()?.address || data().address, status: 'verified'}"></ng-container>
+        </div>
 
-        <div class="flex flex-col gap-4">
-          @for (field of fields; track field.key) {
-            <ng-container *ngTemplateOutlet="dataField; context: { label: field.label, value: getFieldValue(field.key) }"></ng-container>
-          }
-
-          <div class="mt-2 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-            <p class="text-[10px] uppercase font-bold text-blue-400 mb-1">OCR Confidence</p>
-            <p class="text-blue-600 font-bold text-lg">{{ data().confidence }}%</p>
-          </div>
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-xl">
+          <p class="text-[10px] uppercase font-bold text-blue-400 mb-1">OCR Confidence</p>
+          <p class="text-blue-600 font-bold text-lg">{{ processedData()?.confidence || data().confidence }}%</p>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<ng-template #dataField let-label="label" let-value="value">
+<ng-template #field let-label="label" let-value="value" let-status="status" let-systemValue="systemValue">
   <div class="bg-white border border-gray-100 p-3 rounded-lg shadow-sm">
-    <p class="text-[10px] uppercase font-semibold text-gray-400 mb-1">{{ label }}</p>
-    <p class="text-gray-800 font-medium text-sm leading-tight">{{ value }}</p>
-  </div>
-</ng-template> -->
+    <div class="flex justify-between items-start mb-1">
+      <p class="text-[10px] uppercase font-semibold text-gray-400">{{ label }}</p>
+      @if (status === 'verified') {
+        <div class="flex items-center gap-1 text-green-600">
+          <lucide-icon name="check-circle" class="flex w-3 h-3"></lucide-icon>
+          <span class="text-xs font-medium">VERIFIED</span>
+        </div>
+      }
+    </div>
+    <p class="text-gray-800 font-medium text-sm mb-2">{{ value }}</p>
 
-
-<div class="ocr-wrapper mt-8">
-      <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-          <div class="flex flex-col">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Document Image</h3>
-              <div class="flex gap-2 text-gray-400 bg-gray-50 p-1 rounded-lg border border-gray-100">
-                <button (click)="zoomOut()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Zoom Out">
-                  <lucide-icon name="zoom-out" class="w-4 h-4"></lucide-icon>
-                </button>
-                <button (click)="zoomIn()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Zoom In">
-                  <lucide-icon name="zoom-in" class="w-4 h-4"></lucide-icon>
-                </button>
-                <button (click)="rotate()" class="p-1 hover:bg-white hover:text-brand-blue rounded shadow-sm transition-all" title="Rotate">
-                  <lucide-icon name="rotate-cw" class="w-4 h-4"></lucide-icon>
-                </button>
-              </div>
-            </div>
-
-            <div class="bg-gray-50/50 border border-gray-100 rounded-xl overflow-hidden flex items-center justify-center h-[400px] relative">
-              <div [style.transform]="transformStyle()" class="transition-transform duration-300 ease-in-out">
-                <img [src]="imageSrc()" alt="Extracted Document" class="max-w-full shadow-lg rounded-sm" />
-              </div>
-            </div>
-            <div class="text-center mt-2 text-xs text-gray-400">Zoom: {{ zoomLevel() }}%</div>
-          </div>
-
-          <div class="flex flex-col">
-             <h3 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-4">OCR Extracted Data</h3>
-             <div class="space-y-3">
-               <ng-container *ngTemplateOutlet="field; context: {label: 'Name', value: data().name}"></ng-container>
-               <ng-container *ngTemplateOutlet="field; context: {label: 'Date of Birth', value: data().dob}"></ng-container>
-               <ng-container *ngTemplateOutlet="field; context: {label: 'ID Number', value: data().idNumber}"></ng-container>
-               <ng-container *ngTemplateOutlet="field; context: {label: 'Address', value: data().address}"></ng-container>
-             </div>
-
-             <div class="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <p class="text-[10px] uppercase font-bold text-blue-400 mb-1">OCR Confidence</p>
-                <p class="text-blue-600 font-bold text-lg">{{ data().confidence }}%</p>
-             </div>
-          </div>
+    @if (status === 'confirm') {
+      <div class="bg-red-50 border border-red-200 rounded p-2 mb-2">
+        <div class="flex items-center gap-1 text-red-600 mb-1">
+          <lucide-icon name="alert-triangle" class="flex w-3 h-3"></lucide-icon>
+          <span class="text-xs font-medium">System: {{ systemValue }}</span>
         </div>
       </div>
-    </div>
-
-    <ng-template #field let-label="label" let-value="value">
-      <div class="bg-white border border-gray-100 p-3 rounded-lg shadow-sm">
-        <p class="text-[10px] uppercase font-semibold text-gray-400 mb-1">{{ label }}</p>
-        <p class="text-gray-800 font-medium text-sm">{{ value }}</p>
+      <div class="flex gap-2">
+        <button (click)="confirmField(label)" class="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200">
+          <lucide-icon name="check" class="flex w-3 h-3"></lucide-icon>
+          CONFIRM
+        </button>
+        <button (click)="rejectField(label)" class="flex items-center gap-1 px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">
+          <lucide-icon name="x" class="flex w-3 h-3"></lucide-icon>
+        </button>
       </div>
-    </ng-template>
+    }
+  </div>
+</ng-template>

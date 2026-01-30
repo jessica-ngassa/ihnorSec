@@ -1,13 +1,24 @@
 export interface FraudCase {
   id: string | number;
+  caseId?: string;
   recordType: 'identity' | 'payment' | 'compliance';
   name: string;
-  idNumber: string; // Used as primary ID for list view
+  idNumber: string;
   fraudScore: number;
   status: string;
   documentMatched: boolean;
-  documentImage?: string; // For Identity cases
-  assignedTo?: string; // Add assignedTo property
+  documentImage?: string;
+  assignedTo?: string;
+  assignedDate?: string;
+  amount?: number;
+  unit?: string;
+  timeline?: {
+    date: string;
+    user: string;
+    action: string;
+    type: string;
+    details: string;
+  }[];
 
   // Identity Specific
   systemData?: {
@@ -24,6 +35,7 @@ export interface FraudCase {
     expiryDate: string;
     address: string;
     confidence: number;
+    documentImage?: string;
   };
 
   // Payment Specific
@@ -44,7 +56,7 @@ export interface FraudCase {
     averagePayment?: number;
   };
 
-  // Compliance Specific (New)
+  // Compliance Specific
   complianceData?: {
     recordId: string;
     date: string;
