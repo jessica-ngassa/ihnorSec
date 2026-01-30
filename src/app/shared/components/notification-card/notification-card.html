@@ -1,0 +1,53 @@
+<div
+  [class]="'bg-white rounded-lg shadow transition-all hover:shadow-md mb-6 ' + 
+           (!notification.read ? 'border-l-4 border-[#F2C94C]' : '')"
+>
+  <div class="p-4 sm:p-6">
+    <div class="flex items-start gap-3 sm:gap-4">
+      <!-- Icon -->
+      <div [class]="'p-2 sm:p-3 rounded-lg flex-shrink-0 ' + notification.bgColor">
+        <lucide-angular 
+          [name]="notification.icon" 
+          [class]="'w-5 h-5 sm:w-6 sm:h-6 ' + notification.iconColor">
+        </lucide-angular>
+      </div>
+
+      <!-- Content -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between mb-2 gap-2">
+          <h3 [class]="'font-medium text-sm sm:text-base ' + (!notification.read ? 'text-gray-900' : 'text-gray-700')">
+            {{ notification.title }}
+          </h3>
+          <span *ngIf="!notification.read" class="w-2 h-2 bg-[#F2C94C] rounded-full flex-shrink-0 mt-1"></span>
+        </div>
+        <p class="text-xs sm:text-sm text-gray-600 mb-3 leading-relaxed">
+          {{ notification.message }}
+        </p>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <span class="text-xs text-gray-500">{{ notification.time }}</span>
+          <div class="flex items-center gap-2 text-xs">
+            <button 
+              *ngIf="!notification.read"
+              (click)="markAsRead.emit(notification.id)"
+              class="text-[#1F3A7D] hover:underline"
+            >
+              Mark as read
+            </button>
+            <button 
+              (click)="viewDetails.emit(notification.id)"
+              class="text-gray-500 hover:underline"
+            >
+              View Details
+            </button>
+            <button 
+              (click)="deleteNotification.emit(notification.id)"
+              class="text-red-600 hover:underline"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

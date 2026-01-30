@@ -1,0 +1,105 @@
+<div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6 sm:mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3A7D] mb-2">Notifications</h1>
+          <p class="text-gray-600 text-base sm:text-lg">
+            {{ unreadCount() }} unread notification{{ unreadCount() !== 1 ? 's' : '' }}
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <button 
+            (click)="markAllAsRead()"
+            class="px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2 text-sm"
+          >
+            <lucide-angular name="check-circle" class="w-4 h-4"></lucide-angular>
+            Mark All Read
+          </button>
+          <button 
+            (click)="clearAll()"
+            class="px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2 text-sm"
+          >
+            <lucide-angular name="trash-2" class="w-4 h-4"></lucide-angular>
+            Clear All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters and Search -->
+    <div class="bg-white rounded-lg shadow p-4 sm:p-6 mb-4 sm:mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+        <!-- Search -->
+        <div class="flex-1 relative">
+          <lucide-angular name="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5"></lucide-angular>
+          <input
+            type="text"
+            placeholder="Search notifications..."
+            [value]="searchQuery()"
+            (input)="updateSearchQuery($any($event.target).value)"
+            class="w-full pl-9 sm:pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1F3A7D] focus:border-transparent text-sm"
+          />
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="flex items-center gap-2 overflow-x-auto">
+          <lucide-angular name="filter" class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0"></lucide-angular>
+          <button
+            (click)="setFilter('all')"
+            [class]="'px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm whitespace-nowrap ' + 
+                     (filter() === 'all' ? 'bg-[#1F3A7D] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')"
+          >
+            All
+          </button>
+          <button
+            (click)="setFilter('unread')"
+            [class]="'px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm whitespace-nowrap ' + 
+                     (filter() === 'unread' ? 'bg-[#1F3A7D] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')"
+          >
+            Unread
+          </button>
+          <button
+            (click)="setFilter('high-priority')"
+            [class]="'px-3 sm:px-4 py-2 rounded-lg transition-colors text-sm whitespace-nowrap ' + 
+                     (filter() === 'high-priority' ? 'bg-[#1F3A7D] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200')"
+          >
+            High Priority
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="space-y-8">
+      <app-notification-card
+        *ngFor="let notification of filteredNotifications()"
+        [notification]="notification"
+        (markAsRead)="markAsRead($event)"
+        (viewDetails)="viewDetails($event)"
+        (deleteNotification)="deleteNotification($event)"
+      >
+      </app-notification-card>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredNotifications().length === 0" class="bg-white rounded-lg shadow p-8 sm:p-12 text-center">
+        <lucide-angular name="bell" class="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4"></lucide-angular>
+        <h3 class="text-gray-700 font-medium mb-2 text-base sm:text-lg">No notifications found</h3>
+        <p class="text-gray-500 text-sm sm:text-base">
+          <span *ngIf="filter() === 'unread'">You're all caught up! No unread notifications.</span>
+          <span *ngIf="filter() === 'high-priority'">No high-priority notifications at this time.</span>
+          <span *ngIf="filter() === 'all' && searchQuery()">Try a different search term.</span>
+          <span *ngIf="filter() === 'all' && !searchQuery()">No notifications available.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Load More -->
+    <div *ngIf="filteredNotifications().length > 0" class="mt-6 text-center">
+      <button class="px-4 sm:px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm">
+        Load More
+      </button>
+    </div>
+  </div>
+</div>

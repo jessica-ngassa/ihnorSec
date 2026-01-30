@@ -4,7 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { LucideAngularModule } from 'lucide-angular';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
-import { UserProfile, SecuritySettings, UserPreferences, ProfileTab, ActiveSession } from '../../shared/model/profile.interface';
+import { UserService } from '../../shared/services/user.service';
+import { SecuritySettings, UserPreferences, ProfileTab } from '../../shared/model/profile.interface';
 
 @Component({
   selector: 'app-profile',
@@ -17,16 +18,11 @@ export class ProfileComponent {
   loading = signal(false);
   activeTab = signal<ProfileTab>('personal');
 
-  profile = signal<UserProfile>({
-    id: '1',
-    firstName: 'Admin',
-    lastName: 'User',
-    email: 'admin@finance.gov',
-    phone: '+237 670 000 000',
-    jobTitle: 'System Administrator',
-    department: 'IT & Digital Services',
-    role: 'Platform Admin'
-  });
+  constructor(private userService: UserService) {}
+
+  get profile() {
+    return this.userService.profile;
+  }
 
   security = signal<SecuritySettings>({
     twoFactorEnabled: true,
@@ -71,8 +67,8 @@ export class ProfileComponent {
     this.activeTab.set(tab);
   }
 
-  updateProfile(field: keyof UserProfile, value: string): void {
-    this.profile.update(profile => ({ ...profile, [field]: value }));
+  updateProfile(field: string, value: string): void {
+    this.userService.updateProfile({ [field]: value });
   }
 
   toggleTwoFactor(): void {
@@ -108,5 +104,24 @@ export class ProfileComponent {
     this.loading.set(true);
     // Simulate API call
     setTimeout(() => this.loading.set(false), 1000);
+  }
+
+  openPhotoUpload(): void {
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fileInput?.click();
+  }
+
+  onPhotoSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.userService.updateProfile({ 
+          profilePicture: e.target?.result as string 
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   }
 }

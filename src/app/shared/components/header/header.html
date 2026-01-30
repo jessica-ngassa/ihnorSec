@@ -2,15 +2,16 @@
   <div class="flex flex-col"></div>
 
   <div class="flex items-center gap-6">
-    <button class="nav-icon-btn">
+    <button class="nav-icon-btn" (click)="navigateToNotifications()">
       <lucide-icon name="bell-dot"></lucide-icon>
     </button>
 
     <div class="user-profile-trigger group cursor-pointer" (click)="navigateToProfile()">
-      <div class="avatar-circle">
-        <lucide-icon name="user"></lucide-icon>
+      <div class="avatar-circle overflow-hidden">
+        <img *ngIf="profile().profilePicture" [src]="profile().profilePicture" alt="Profile" class="w-full h-full object-cover">
+        <lucide-icon *ngIf="!profile().profilePicture" name="user"></lucide-icon>
       </div>
-      <span class="user-label">Admin User</span>
+      <span class="user-label">{{ profile().firstName }} {{ profile().lastName }}</span>
     </div>
   </div>
 </header>
