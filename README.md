@@ -207,13 +207,9 @@ ng build --configuration production
 4. Update documentation
 5. Submit pull request
 
-## License
-
-[Add your license information here]
 
 ## Support
 
 For technical support or questions:
 - Create an issue in the repository
-- Contact the development team
-- Check Angular documentation: https://angular.dev
+- Contact the dev team
