@@ -1,4 +1,348 @@
- <div class="p-6">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-4">Agency Settings</h1>
-      <p class="text-gray-600">Agency settings configuration coming soon.</p>
+@if (isLoading()) {
+  <app-loading-spinner message="Loading Agency Settings..."></app-loading-spinner>
+} @else {
+<div class="p-6 bg-[#F8FAFC] min-h-screen">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-black text-[#1F3A7D] mb-1">Agency Settings</h1>
+        <p class="text-gray-500 font-medium">Configure global platform preferences and organization profile</p>
+      </div>
+      <button 
+        nz-button
+        nzType="primary"
+        [nzLoading]="isLoading()"
+        (click)="onSaveAll()"
+        class="bg-[#1F3A7D] hover:bg-[#162A5A] font-bold px-8 py-6 rounded-xl shadow-lg shadow-blue-900/10">
+        Save All Changes
+      </button>
     </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Navigation Sidebar -->
+      <div class="lg:col-span-1 space-y-2">
+        @for (tab of tabs; track tab.id) {
+          <button
+            (click)="onTabChange(tab.id)"
+            [class]="'w-full flex items-center justify-between p-4 rounded-xl transition-all ' +
+              (activeTab() === tab.id 
+                ? 'bg-white border-2 border-[#1F3A7D] text-[#1F3A7D] shadow-sm' 
+                : 'bg-transparent border-2 border-transparent text-gray-500 hover:bg-white hover:border-gray-100')">
+            <div class="flex items-center gap-3">
+              <lucide-icon 
+                [name]="tab.icon" 
+                [class]="'w-5 h-5 ' + (activeTab() === tab.id ? 'text-[#1F3A7D]' : 'text-gray-400')">
+              </lucide-icon>
+              <span class="font-bold text-sm">{{ tab.label }}</span>
+            </div>
+            @if (activeTab() === tab.id) {
+              <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
+            }
+          </button>
+        }
+
+        <div class="mt-8 p-6 bg-[#E9F2FF] rounded-2xl border border-blue-100">
+          <h4 class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-4">Environment Status</h4>
+          @if (settings(); as currentSettings) {
+            <div class="space-y-4">
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-gray-600">Region</span>
+                <span class="text-xs font-bold text-[#1F3A7D]">{{ currentSettings.environment.region }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-gray-600">Mode</span>
+                <nz-tag class="bg-green-50 text-green-700 border-green-100">{{ currentSettings.environment.mode }}</nz-tag>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-gray-600">Tenant ID</span>
+                <span class="text-xs font-mono font-bold text-gray-400">{{ currentSettings.environment.tenantId }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="lg:col-span-3 space-y-6">
+        <!-- General Tab -->
+        @if (activeTab() === 'general' && settings(); as currentSettings) {
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-8 border-b border-gray-100">
+              <h3 class="text-lg font-black text-[#1F3A7D]">General Information</h3>
+              <p class="text-sm text-gray-500">Update your organization's core identification details</p>
+            </div>
+            <div class="p-8 space-y-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Agency Name</label>
+                  <input 
+                    type="text" 
+                    name="agencyName"
+                    [value]="currentSettings.general.agencyName"
+                    class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Agency Code</label>
+                  <input 
+                    type="text" 
+                    name="agencyCode"
+                    [value]="currentSettings.general.agencyCode"
+                    class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl font-bold text-gray-800 focus:ring-2 focus:ring-blue-500/10 outline-none transition-all" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sector Type</label>
+                  <nz-select 
+                    name="sectorType"
+                    [ngModel]="currentSettings.general.sectorType"
+                    class="w-full">
+                    @for (sector of sectorTypes; track sector) {
+                      <nz-option [nzValue]="sector" [nzLabel]="sector"></nz-option>
+                    }
+                  </nz-select>
+                </div>
+                <div class="space-y-2">
+                  <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Default Currency</label>
+                  <nz-select 
+                    name="defaultCurrency"
+                    [ngModel]="currentSettings.general.defaultCurrency"
+                    class="w-full">
+                    @for (currency of currencies; track currency) {
+                      <nz-option [nzValue]="currency" [nzLabel]="currency"></nz-option>
+                    }
+                  </nz-select>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Branding Tab -->
+        @if (activeTab() === 'branding') {
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-8 border-b border-gray-100">
+              <h3 class="text-lg font-black text-[#1F3A7D]">Branding & Visuals</h3>
+              <p class="text-sm text-gray-500">Customize the platform look and feel to match your agency identity</p>
+            </div>
+            <div class="p-8 space-y-10">
+              <div class="flex items-center gap-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                <div class="w-24 h-24 bg-white rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center text-3xl shadow-sm">
+                  🏦
+                </div>
+                <div class="space-y-3">
+                  <p class="text-sm font-bold text-gray-900">Agency Logo</p>
+                  <div class="flex gap-2">
+                    <button nz-button class="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 h-9 font-bold px-4">
+                      <lucide-icon name="upload" class="w-4 h-4 mr-2"></lucide-icon>
+                      Change Logo
+                    </button>
+                    <button nz-button class="bg-white border border-red-100 text-red-500 hover:bg-red-50 h-9 font-bold px-4">
+                      <lucide-icon name="trash-2" class="w-4 h-4 mr-2"></lucide-icon>
+                      Remove
+                    </button>
+                  </div>
+                  <p class="text-[10px] font-bold text-gray-400 uppercase">SVG, PNG or JPG (Max 2MB)</p>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="space-y-4">
+                  <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Primary Identity Color</label>
+                  <div class="flex items-center gap-4">
+                    <input 
+                      type="color" 
+                      [value]="primaryColor()"
+                      (input)="onColorChange('primary', $any($event.target).value)"
+                      class="w-16 h-16 rounded-xl border-4 border-white shadow-lg cursor-pointer" />
+                    <div class="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl font-mono text-sm font-bold text-gray-800">
+                      {{ primaryColor().toUpperCase() }}
+                    </div>
+                  </div>
+                </div>
+                <div class="space-y-4">
+                  <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Accent Brand Color</label>
+                  <div class="flex items-center gap-4">
+                    <input 
+                      type="color" 
+                      [value]="accentColor()"
+                      (input)="onColorChange('accent', $any($event.target).value)"
+                      class="w-16 h-16 rounded-xl border-4 border-white shadow-lg cursor-pointer" />
+                    <div class="flex-1 p-3 bg-gray-50 border border-gray-200 rounded-xl font-mono text-sm font-bold text-gray-800">
+                      {{ accentColor().toUpperCase() }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-8 bg-gray-900 rounded-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                  <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Interface Preview</p>
+                  <div class="flex items-center gap-4">
+                    <button 
+                      [style.backgroundColor]="primaryColor()" 
+                      class="px-6 py-2 rounded-lg text-white font-bold text-sm">
+                      Action Button
+                    </button>
+                    <div 
+                      [style.backgroundColor]="accentColor()" 
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-gray-900">
+                      <lucide-icon name="check-circle" class="w-4 h-4"></lucide-icon>
+                    </div>
+                    <div class="h-2 w-32 bg-gray-800 rounded-full overflow-hidden">
+                      <div 
+                        [style.backgroundColor]="primaryColor()" 
+                        class="h-full w-2/3 rounded-full">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute top-0 right-0 p-8 opacity-10">
+                  <lucide-icon name="palette" class="w-24 h-24 text-white"></lucide-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Users Tab -->
+        @if (activeTab() === 'users' && settings(); as currentSettings) {
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-8 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-black text-[#1F3A7D]">Team Members</h3>
+                <p class="text-sm text-gray-500">Manage investigator access and agency administrators</p>
+              </div>
+              <button nz-button nzType="primary" (click)="onInviteMember()" class="bg-[#1F3A7D] font-bold px-6">
+                <lucide-icon name="plus" class="w-4 h-4 mr-2"></lucide-icon>
+                Invite Member
+              </button>
+            </div>
+            <div class="p-8">
+              <div class="space-y-4">
+                @for (user of currentSettings.users; track user.id) {
+                  <div class="flex items-center justify-between p-5 border border-gray-100 rounded-2xl hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center gap-4">
+                      <div class="w-12 h-12 bg-blue-50 text-[#1F3A7D] rounded-full flex items-center justify-center font-black text-lg">
+                        {{ user.name.charAt(0) }}
+                      </div>
+                      <div>
+                        <p class="font-bold text-gray-900">{{ user.name }}</p>
+                        <p class="text-xs text-gray-400 font-medium">{{ user.email }}</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-6">
+                      <div class="text-right">
+                        <p class="text-xs font-bold text-gray-700">{{ user.role }}</p>
+                        <nz-tag [class]="getStatusClass(user.status)">
+                          {{ user.status }}
+                        </nz-tag>
+                      </div>
+                      <button 
+                        (click)="onRemoveTeamMember(user.id)"
+                        class="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                        <lucide-icon name="trash-2" class="w-5 h-5"></lucide-icon>
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Security Tab -->
+        @if (activeTab() === 'security' && settings(); as currentSettings) {
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-8 border-b border-gray-100">
+              <h3 class="text-lg font-black text-[#1F3A7D]">Platform & Security</h3>
+              <p class="text-sm text-gray-500">Configure global security protocols and session behaviors</p>
+            </div>
+            <div class="p-8 space-y-8">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 bg-white rounded-lg shadow-sm">
+                        <lucide-icon name="lock" class="w-5 h-5 text-blue-500"></lucide-icon>
+                      </div>
+                      <span class="font-bold text-gray-900">Two-Factor Auth</span>
+                    </div>
+                    <nz-checkbox 
+                      name="twoFactorAuth"
+                      [(ngModel)]="currentSettings.security.twoFactorAuth">
+                    </nz-checkbox>
+                  </div>
+                  <p class="text-xs text-gray-500 font-medium">Require all agency personnel to use 2FA for system access.</p>
+                </div>
+
+                <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <div class="p-2 bg-white rounded-lg shadow-sm">
+                        <lucide-icon name="clock" class="w-5 h-5 text-orange-500"></lucide-icon>
+                      </div>
+                      <span class="font-bold text-gray-900">Session Timeout</span>
+                    </div>
+                    <nz-select 
+                      name="sessionTimeout"
+                      [ngModel]="currentSettings.security.sessionTimeout" 
+                      class="w-32">
+                      @for (timeout of sessionTimeouts; track timeout.value) {
+                        <nz-option [nzValue]="timeout.value" [nzLabel]="timeout.label"></nz-option>
+                      }
+                    </nz-select>
+                  </div>
+                  <p class="text-xs text-gray-500 font-medium">Automatic logout after period of inactivity.</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Regional & Localization</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-700">Platform Language</label>
+                    <nz-select 
+                      name="platformLanguage"
+                      [ngModel]="currentSettings.security.platformLanguage" 
+                      class="w-full">
+                      @for (language of languages; track language) {
+                        <nz-option [nzValue]="language" [nzLabel]="language"></nz-option>
+                      }
+                    </nz-select>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-xs font-bold text-gray-700">Time Zone</label>
+                    <nz-select 
+                      name="timeZone"
+                      [ngModel]="currentSettings.security.timeZone" 
+                      class="w-full">
+                      @for (timezone of timeZones; track timezone) {
+                        <nz-option [nzValue]="timezone" [nzLabel]="timezone"></nz-option>
+                      }
+                    </nz-select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-6 border-t border-gray-100 flex justify-end">
+                <button nz-button class="bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 font-bold">
+                  Reset Platform Defaults
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Invite Member Modal -->
+<app-invite-member-modal
+  [(visible)]="showInviteModal"
+  (memberInvited)="onMemberInvited($event)">
+</app-invite-member-modal>
+}

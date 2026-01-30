@@ -1,0 +1,98 @@
+// Agency Settings Component Styles
+.agency-settings {
+  .tab-button {
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      transform: translateY(-1px);
+    }
+    
+    &.active {
+      box-shadow: 0 4px 12px 0 rgba(31, 58, 125, 0.1);
+    }
+  }
+  
+  .environment-status {
+    background: linear-gradient(135deg, #E9F2FF 0%, #F0F7FF 100%);
+  }
+  
+  .content-card {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  .logo-upload {
+    &:hover {
+      border-color: #1F3A7D;
+      background-color: #f8fafc;
+    }
+  }
+  
+  .color-picker {
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+      border: none;
+      border-radius: 12px;
+    }
+    
+    &::-webkit-color-swatch {
+      border: none;
+      border-radius: 12px;
+    }
+  }
+  
+  .team-member-card {
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+    }
+  }
+  
+  .security-toggle {
+    .ant-checkbox-checked .ant-checkbox-inner {
+      background-color: #1F3A7D;
+      border-color: #1F3A7D;
+    }
+  }
+}
+
+// Animations
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+  .agency-settings {
+    .grid-cols-4 {
+      grid-template-columns: 1fr;
+    }
+    
+    .lg\\:col-span-1,
+    .lg\\:col-span-3 {
+      grid-column: span 1;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .agency-settings {
+    .md\\:grid-cols-2 {
+      grid-template-columns: 1fr;
+    }
+    
+    .md\\:flex-row {
+      flex-direction: column;
+    }
+    
+    .gap-8 {
+      gap: 1rem;
+    }
+  }
+}

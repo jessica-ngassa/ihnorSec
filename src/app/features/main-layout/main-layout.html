@@ -15,7 +15,7 @@
       <ul nz-menu nzMode="inline" class="border-none flex-grow">
         @for (item of menuItems; track item.path) {
           <li nz-menu-item [routerLink]="item.path" routerLinkActive="ant-menu-item-selected" class="sidebar-nav-item">
-            <span nz-icon [nzType]="item.icon" class="mr-2"></span>
+            <lucide-icon [name]="item.icon" class="w-4 h-4 mr-2"></lucide-icon>
             <span>{{ item.label }}</span>
           </li>
         }

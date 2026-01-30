@@ -26,9 +26,9 @@ export class MainLayout {
   menuItems = [
     {
       path: '/dashboard',
-       icon: 'dashboard',
-       label: 'Dashboard'
-      },
+      icon: 'layout-dashboard',
+      label: 'Dashboard'
+    },
     {
       path: '/upload',
       icon: 'upload',
@@ -36,12 +36,12 @@ export class MainLayout {
     },
     {
       path: '/fraud',
-      icon: 'warning',
+      icon: 'folder-open',
       label: 'Cases'
     },
     {
       path: '/document',
-      icon: 'file-text',
+      icon: 'scan-text',
       label: 'OCR Review'
     },
     {
@@ -54,7 +54,7 @@ export class MainLayout {
   configurationItems = [
     {
       path: '/config/modules',
-      icon: 'settings',
+      icon: 'box',
       label: 'Modules'
     },
     {
@@ -66,19 +66,14 @@ export class MainLayout {
       path: '/config/data-mapping',
       icon: 'database',
       label: 'Data Mapping'
-    },
-    {
-      path: '/config/agency-settings',
-      icon: 'settings',
-      label: 'Agency Settings'
     }
   ];
 
   platformAdminItems = [
     {
-      path: '/admin/multi-tenant',
-      icon: 'users',
-      label: 'Multi-Tenant Config'
+      path: '/config/agency-settings',
+      icon: 'settings',
+      label: 'Agency Settings'
     }
   ];
 
