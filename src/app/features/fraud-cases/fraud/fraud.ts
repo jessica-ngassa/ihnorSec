@@ -31,7 +31,6 @@ export class Fraud {
   rawFraudData = toSignal(this.fraudService.getFraudCases(), { initialValue: [] });
 
   constructor() {
-    // Set loading to false when data arrives
     effect(() => {
       const data = this.rawFraudData();
       if (data.length > 0) {
@@ -53,9 +52,8 @@ export class Fraud {
     });
   });
 
-  // --- Visual Helpers (Matching New Design) ---
 
-  // Formats ID like "CASE-2024-001"
+  // Formats ID like CASE-2024-001 // TODO SHOULD BE COMING FROM BACKEND
   formatCaseId(id: string | number): string {
     return `CASE-2024-${String(id).padStart(3, '0')}`;
   }
@@ -81,7 +79,7 @@ export class Fraud {
     return 'Low';
   }
 
-  // Status Badge Color (Yellows)
+  // Status Badge Color
   getStatusColor(status: string): string {
     switch (status) {
       case 'Unassigned': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
