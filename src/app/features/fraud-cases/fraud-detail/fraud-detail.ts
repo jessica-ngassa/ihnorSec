@@ -9,13 +9,15 @@ import { AnomaliesDetected } from '../../../shared/components/anomalies-detected
 import { OcrDocumentViewer } from '../../../shared/components/ocr-document-viewer/ocr-document-viewer';
 import { FraudService } from '../../../shared/services/fraud.service';
 import { ComparisonTable } from '../../../shared/components/comparison-table/comparison-table';
+import { CaseHeader } from '../../../shared/components/case-header/case-header';
 import { CaseManagement } from '../../../shared/components/case-management/case-management';
 import { LoadingSpinner } from '../../../shared/components/loading-spinner/loading-spinner';
+import { CaseActionModal } from '../../../shared/components/case-action-modal/case-action-modal';
 
 @Component({
   selector: 'app-fraud-detail',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, AnomaliesDetected, OcrDocumentViewer, ComparisonTable, CaseManagement, LoadingSpinner],
+  imports: [CommonModule, LucideAngularModule, AnomaliesDetected, OcrDocumentViewer, ComparisonTable, CaseHeader, CaseManagement, LoadingSpinner, CaseActionModal],
   templateUrl: './fraud-detail.html',
   styleUrl: './fraud-detail.scss',
 })
@@ -26,6 +28,10 @@ export class FraudDetail {
 
   // Tabs State
   activeTab = signal<'evidence' | 'ocr' | 'timeline'>('evidence');
+  
+  // Modal State
+  modalOpen = signal(false);
+  modalAction = signal<'reassign' | 'escalate' | 'close'>('reassign');
 
   fraudCase = toSignal(
     this.route.paramMap.pipe(
@@ -81,10 +87,31 @@ export class FraudDetail {
     this.router.navigate(['/fraud']);
   }
 
-  // Sidebar Actions (Placeholder logic)
-  reassign() { console.log('Reassign clicked'); }
-  escalate() { console.log('Escalate clicked'); }
-  closeCase() { console.log('Close Case clicked'); }
+  // Sidebar Actions
+  reassign() { 
+    this.modalAction.set('reassign');
+    this.modalOpen.set(true);
+  }
+  
+  escalate() { 
+    this.modalAction.set('escalate');
+    this.modalOpen.set(true);
+  }
+  
+  closeCase() { 
+    this.modalAction.set('close');
+    this.modalOpen.set(true);
+  }
+
+  onModalClose() {
+    this.modalOpen.set(false);
+  }
+
+  onModalConfirm(data: any) {
+    console.log('Action confirmed:', data);
+    this.modalOpen.set(false);
+    // Handle the action based on data.type
+  }
 
   onDocumentLinked(file: File) {
     console.log('Document linked, calling backend OCR service:', file.name);

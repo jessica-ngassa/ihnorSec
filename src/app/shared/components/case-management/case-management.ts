@@ -1,7 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-case-management',
@@ -11,23 +10,29 @@ import { Router } from '@angular/router';
   styleUrl: './case-management.scss'
 })
 export class CaseManagement {
-  @Input() caseName: string = '';
-  @Input() caseStatus: string = '';
-  @Input() recordType: string = '';
-
-  constructor(private router: Router) {}
-
-  goBack() {
-    this.router.navigate(['/fraud']);
-  }
+  @Input() caseData: any;
+  @Output() reassign = new EventEmitter<void>();
+  @Output() escalate = new EventEmitter<void>();
+  @Output() closeCase = new EventEmitter<void>();
 
   getStatusColor(status: string): string {
     switch (status) {
-      case 'High Risk': return 'border-red-200 bg-red-50 text-red-700'; //TODO MAKE THIS BETTER
-      case 'Medium Risk': return 'border-orange-200 bg-orange-50 text-orange-700';
-      case 'Low Risk': return 'border-blue-200 bg-blue-50 text-blue-700';
-      case 'Clean': return 'border-green-200 bg-green-50 text-green-700';
-      default: return 'border-gray-200 bg-gray-50 text-gray-700';
+      case 'Unassigned': return 'bg-yellow-100 text-yellow-800';
+      case 'Under Investigation': return 'bg-blue-100 text-blue-700';
+      case 'Resolved': return 'bg-green-100 text-green-700';
+      default: return 'bg-gray-100 text-gray-700';
     }
+  }
+
+  onReassign() {
+    this.reassign.emit();
+  }
+
+  onEscalate() {
+    this.escalate.emit();
+  }
+
+  onCloseCase() {
+    this.closeCase.emit();
   }
 }

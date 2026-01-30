@@ -15,7 +15,7 @@
 
   <div class="flex gap-4 mb-6">
     <div class="relative flex-grow">
-      <lucide-icon name="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
+      <lucide-icon name="search" class="flex absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></lucide-icon>
       <input type="text" placeholder="Search by name, ID, or transaction ID..."
       [ngModel]="searchValue()"
       (ngModelChange)="searchValue.set($event)"

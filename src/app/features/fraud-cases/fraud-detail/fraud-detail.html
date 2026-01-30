@@ -1,11 +1,16 @@
 @if (fraudCase(); as data) {
 <div class="p-6 bg-gray-50/50 min-h-screen">
 
-  <app-case-management 
+  <app-case-header
     [caseName]="data.name"
     [caseStatus]="data.status"
-    [recordType]="data.recordType">
-  </app-case-management>
+    [recordType]="data.recordType"
+    [caseId]="'CASE-2024-001'"
+    [idNumber]="'CI-2345678'"
+    [assignedTo]="data.assignedTo || 'Marie Diop'"
+    [amount]="'4,500,000 FCFA'"
+    [riskScore]="data.fraudScore">
+  </app-case-header>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -51,7 +56,7 @@
                        [class]="getSeverityColor(anomaly.severity)">
                     <div class="flex justify-between items-start mb-1">
                       <div class="flex items-center gap-2">
-                        <lucide-icon name="alert-triangle" class="w-4 h-4"></lucide-icon>
+                        <lucide-icon name="alert-triangle" class="flex w-4 h-4"></lucide-icon>
                         <h4 class="font-bold text-sm">{{ anomaly.title }}</h4>
                       </div>
                       <span class="text-xs font-bold px-2 py-0.5 rounded bg-white/50">Confidence: 98%</span>
@@ -100,23 +105,29 @@
           <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <h3 class="text-[#1F3A7D] font-semibold mb-6">Case Timeline</h3>
 
-            <div class="relative pl-4 border-l-2 border-gray-100 space-y-8">
+            <div class="space-y-4">
               @for (event of data.timeline; track event.date) {
-                <div class="relative">
-                  <div class="absolute -left-[21px] top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
-                       [class.bg-blue-100]="event.type === 'system'"
-                       [class.bg-purple-100]="event.type === 'upload'">
-                    <div class="w-2 h-2 rounded-full"
-                         [class.bg-blue-600]="event.type === 'system'"
-                         [class.bg-purple-600]="event.type === 'upload'"></div>
+                <div class="flex gap-4">
+                  <div class="flex flex-col items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                         [class.bg-blue-100]="event.type === 'system'"
+                         [class.bg-purple-100]="event.type === 'upload'">
+                      @if (event.type === 'system') {
+                        <lucide-icon name="info" class="flex w-5 h-5 text-blue-600"></lucide-icon>
+                      } @else if (event.type === 'upload') {
+                        <lucide-icon name="upload" class="flex w-5 h-5 text-purple-600"></lucide-icon>
+                      }
+                    </div>
+                    <div class="w-0.5 h-12 bg-gray-200 mt-2"></div>
                   </div>
-
-                  <div class="flex justify-between items-start mb-1">
-                    <p class="text-sm font-semibold text-gray-900">{{ event.action }}</p>
-                    <span class="text-xs text-gray-400">{{ event.date }}</span>
+                  <div class="flex-1 pb-4">
+                    <div class="flex items-center justify-between mb-1">
+                      <p class="font-medium text-gray-900">{{ event.action }}</p>
+                      <p class="text-sm text-gray-500">{{ event.date }}</p>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-1">{{ event.details }}</p>
+                    <p class="text-xs text-gray-500">By: {{ event.user }}</p>
                   </div>
-                  <p class="text-sm text-gray-600">{{ event.details }}</p>
-                  <p class="text-xs text-gray-400 mt-1">By: {{ event.user }}</p>
                 </div>
               }
             </div>
@@ -126,80 +137,25 @@
       </div>
 
       <div class="lg:col-span-1 space-y-6">
-
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-6">
-          <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-4">
-            <h3 class="font-semibold text-gray-900">Case Management</h3>
-          </div>
-
-          <div class="space-y-6">
-
-            <div>
-              <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Case Status</p>
-              <div class="px-4 py-2 rounded-lg text-center font-medium text-sm" [class]="getStatusColor(data.status)">
-                {{ data.status }}
-              </div>
-            </div>
-
-            <div>
-              <p class="text-xs font-semibold text-gray-400 uppercase mb-2">Assigned To</p>
-              @if (data.assignedTo) {
-                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 flex items-center gap-3">
-                  <div class="w-8 h-8 bg-[#1F3A7D] rounded-full flex items-center justify-center text-white">
-                    <lucide-icon name="user" class="flex w-4 h-4"></lucide-icon>
-                  </div>
-                  <div>
-                    <p class="text-sm font-bold text-gray-900">{{ data.assignedTo }}</p>
-                    <p class="text-xs text-gray-500">Senior Investigator</p>
-                  </div>
-                </div>
-                <p class="text-xs text-gray-400 mt-2">Assigned on {{ data.assignedDate }}</p>
-              } @else {
-                <div class="p-3 bg-orange-50 rounded-lg border border-orange-100 text-center">
-                  <p class="text-sm font-medium text-orange-800">Unassigned</p>
-                </div>
-              }
-            </div>
-
-            <div class="space-y-3 pt-2">
-              <button (click)="reassign()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                Reassign
-              </button>
-
-              <button (click)="escalate()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-orange-200 text-orange-700 rounded-lg text-sm font-medium hover:bg-orange-50 transition-colors">
-                Escalate
-              </button>
-
-              <button (click)="closeCase()" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors shadow-sm">
-                Close Case
-              </button>
-            </div>
-
-            <div class="pt-6 border-t border-gray-100 space-y-4">
-              <div>
-                <p class="text-xs text-gray-400 mb-1">Risk Score</p>
-                <div class="w-full bg-gray-100 rounded-full h-1.5 mb-1">
-                  <div class="bg-red-500 h-1.5 rounded-full" [style.width.%]="data.fraudScore"></div>
-                </div>
-                <p class="text-right text-xs font-bold text-red-600">{{ data.fraudScore }}%</p>
-              </div>
-
-              <div class="flex justify-between text-sm border-b border-gray-50 pb-2">
-                <span class="text-gray-500">Department</span>
-                <span class="font-medium">{{ data.unit || 'Payroll' }}</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Created</span>
-                <span class="font-medium">2024-01-15</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
+        <app-case-management
+          [caseData]="data"
+          (reassign)="reassign()"
+          (escalate)="escalate()"
+          (closeCase)="closeCase()">
+        </app-case-management>
       </div>
 
     </div>
+
+    <!-- Case Action Modal -->
+    <app-case-action-modal
+      [isOpen]="modalOpen()"
+      [actionType]="modalAction()"
+      [riskScore]="data.fraudScore"
+      [amount]="'4,500,000 FCFA'"
+      (close)="onModalClose()"
+      (confirm)="onModalConfirm($event)">
+    </app-case-action-modal>
   </div>
 } @else {
   <app-loading-spinner message="Loading Case Details..."></app-loading-spinner>
