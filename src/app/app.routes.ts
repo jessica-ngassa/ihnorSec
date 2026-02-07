@@ -31,9 +31,9 @@ export const routes: Routes = [
           }
         ]
       },
-          {
-        path: 'document',
-        loadComponent: () => import('./features/document/document').then(m => m.Document)
+      {
+        path: 'ocr-review',
+        loadComponent: () => import('./features/orc-review/orc-review').then(m => m.OrcReview)
       },
       {
         path: 'reports',

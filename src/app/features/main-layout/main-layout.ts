@@ -20,7 +20,7 @@ export class MainLayout {
   private router = inject(Router);
   private document = inject(DOCUMENT);
   private translationService = inject(TranslationService);
-  
+
   currentLocale = this.translationService.currentLocale;
 
   menuItems = [
@@ -40,7 +40,7 @@ export class MainLayout {
       label: 'Cases'
     },
     {
-      path: '/document',
+      path: '/ocr-review',
       icon: 'scan-text',
       label: 'OCR Review'
     },
