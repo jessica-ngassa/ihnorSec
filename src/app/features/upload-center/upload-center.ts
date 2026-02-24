@@ -8,13 +8,35 @@ import { UploadProgress } from './component/upload-progress/upload-progress';
 import { DataPreviewTable } from './component/import-data/data-preview-table/data-preview-table';
 import { UploadSuccess } from './component/upload-success/upload-success';
 import { OcrSuccess } from './component/import-data/ocr-success/ocr-success';
-import { UploadService } from '../../shared/services/upload.service';
+import { UploadService, JobStatusResponse } from '../../shared/services/upload.service';
 import { ColumnMappingComponent } from './component/column-mapping/column-mapping';
 import * as XLSX from 'xlsx';
 import { DocumentTypeSelector } from './component/import-document/document-type-selector/document-type-selector';
 import { DocumentValidation } from './component/import-document/document-validation/document-validation';
 import { ValidationResult } from '../../shared/model/documentation-validation';
 import { TranslationService } from '../../shared/services/translation.service';
+
+interface OCRResult {
+  bbox: number[][];
+  text: string;
+  confidence: number;
+}
+
+interface OCRResponse {
+  results: OCRResult[];
+  num_detections: number;
+  language: string;
+  backend: string;
+}
+
+interface Job {
+  id: string;
+  status: 'PREPARING' | 'UPLOADING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  progress: number;
+  fileName: string;
+  type: 'DATA' | 'OCR';
+  createdAt: Date;
+}
 
 @Component({
   selector: 'app-upload-center',
@@ -37,9 +59,14 @@ import { TranslationService } from '../../shared/services/translation.service';
 export class UploadCenterComponent {
   private router = inject(Router);
   translationService = inject(TranslationService);
+  private uploadService = inject(UploadService);
 
   // Global State
   activeTab = signal<'data' | 'document'>('data');
+
+  // Job Tracking State
+  activeJobs = signal<Job[]>([]);
+  isJobActive = computed(() => this.activeJobs().length > 0);
 
   // Data Tab State
   selectedDataType = signal<string>('');
@@ -49,10 +76,11 @@ export class UploadCenterComponent {
   totalRows = signal<number>(0);
   progress = signal(0);
   validationResult = signal<ValidationResult | null>(null);
-  private uploadService = inject(UploadService);
   selectedDocType = signal<string>('');
   uploadStep = signal<'initial' | 'preview' | 'processing' | 'success'>('initial');
 
+  ocrResults = signal<OCRResult[]>([]);
+  imagePreviewUrl = signal<string>('');
 
   // document Tab state
   ocrStep = signal<'initial' | 'validating' | 'validated' | 'processing' | 'success'>('initial');
@@ -145,6 +173,12 @@ export class UploadCenterComponent {
   private runValidation(file: File, typeId: string) {
     this.validationResult.set({ status: 'validating' });
 
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.imagePreviewUrl.set(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
     this.uploadService.validateDocument(file, typeId).subscribe({
       next: (result) => {
         this.validationResult.set(result);
@@ -156,20 +190,136 @@ export class UploadCenterComponent {
     });
   }
 
+
   runDocumentAnalysis() {
     this.ocrStep.set('processing');
     this.progress.set(0);
 
-    const interval = setInterval(() => {
-      this.progress.update((p) => p + 5);
-      if (this.progress() >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          this.ocrStep.set('success');
-        }, 600);
+    const file = this.uploadedFile();
+    if (!file) return;
+
+    const language = 'en'; // Or from a settings signal
+
+    // Create and track job
+    const jobId = this.generateJobId();
+    const job: Job = {
+      id: jobId,
+      status: 'PREPARING',
+      progress: 0,
+      fileName: file.name,
+      type: 'OCR',
+      createdAt: new Date()
+    };
+    this.addJob(job);
+
+    this.uploadService.runDocumentAnalysis(file, language).subscribe({
+      next: (jobStatus) => {
+        this.updateJobStatus(jobId, jobStatus);
+
+        switch (jobStatus.status) {
+          case 'UPLOADING':
+            this.progress.set(25);
+            this.updateJobProgress(jobId, 25, 'UPLOADING');
+            break;
+          case 'PROCESSING':
+            this.progress.set(50);
+            this.updateJobProgress(jobId, 50, 'PROCESSING');
+            break;
+          case 'COMPLETED':
+            if (jobStatus.result?.results) {
+              this.ocrResults.set(jobStatus.result.results);
+              this.progress.set(100);
+              this.updateJobProgress(jobId, 100, 'COMPLETED');
+              setTimeout(() => {
+                this.ocrStep.set('success');
+              }, 600);
+            }
+            break;
+          case 'FAILED':
+            console.error('OCR failed:', jobStatus.error_message);
+            this.progress.set(0);
+            this.updateJobProgress(jobId, 0, 'FAILED');
+            this.ocrStep.set('initial');
+            break;
+        }
+      },
+      error: (err) => {
+        console.error('Analysis failed', err);
+        this.progress.set(0);
+        this.updateJobProgress(jobId, 0, 'FAILED');
+        this.ocrStep.set('initial');
       }
-    }, 100);
+    });
   }
+
+  // Job Management Methods
+  private generateJobId(): string {
+    return `job-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private addJob(job: Job): void {
+    this.activeJobs.update(jobs => [...jobs, job]);
+  }
+
+  private updateJobStatus(jobId: string, jobStatus: JobStatusResponse): void {
+    this.activeJobs.update(jobs =>
+      jobs.map(job =>
+        job.id === jobId
+          ? { ...job, status: jobStatus.status as any }
+          : job
+      )
+    );
+  }
+
+  private updateJobProgress(jobId: string, progress: number, status: Job['status']): void {
+    this.activeJobs.update(jobs =>
+      jobs.map(job =>
+        job.id === jobId
+          ? { ...job, progress, status }
+          : job
+      )
+    );
+  }
+
+  navigateToPipelineStatus(): void {
+    // Navigate to pipeline status page
+    // You can use route params to show which jobs are active
+    this.router.navigate(['/upload/pipeline-status'], {
+      state: { activeJobs: this.activeJobs() }
+    });
+  }
+
+  // runDocumentAnalysis() {
+  //   this.ocrStep.set('processing');
+  //   this.progress.set(0);
+
+  //   const file = this.uploadedFile();
+  //   if (!file) return;
+
+  //   this.uploadService.uploadImage(file).subscribe({
+  //     next: (uploadResponse) => {
+  //       this.uploadService.processOCR(uploadResponse.url).subscribe({
+  //         next: (response: OCRResponse) => {
+  //           this.ocrResults.set(response.results);
+  //           this.progress.set(100);
+  //           setTimeout(() => {
+  //             this.ocrStep.set('success');
+  //           }, 600);
+  //         },
+  //         error: (err: any) => {
+  //           console.error('OCR failed', err);
+  //           this.progress.set(0);
+  //           this.ocrStep.set('initial');
+  //         }
+  //       });
+  //     },
+  //     error: (err: any) => {
+  //       console.error('Upload failed', err);
+  //       this.progress.set(0);
+  //       this.ocrStep.set('initial');
+  //     }
+  //   });
+  // }
 
   analysisButtonLabel = computed(() => {
     const type = this.selectedDataType();
@@ -190,6 +340,8 @@ export class UploadCenterComponent {
     this.validationResult.set(null);
     this.progress.set(0);
     this.previewData.set([]);
+    this.ocrResults.set([]);
+    this.imagePreviewUrl.set('');
   }
 
   viewReport() {

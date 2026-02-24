@@ -16,7 +16,16 @@ export const routes: Routes = [
       },
       {
         path: 'upload',
-        loadComponent: () => import('./features/upload-center/upload-center').then(m => m.UploadCenterComponent)
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/upload-center/upload-center').then(m => m.UploadCenterComponent)
+          },
+          {
+            path: 'pipeline-status',
+            loadComponent: () => import('./features/upload-center/pipeline-status/pipeline-status').then(m => m.PipelineStatusComponent)
+          }
+        ]
       },
       {
         path: 'fraud',
